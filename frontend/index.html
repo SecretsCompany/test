@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CryptoInvest — Инвестируй. Зарабатывай. Расти.</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root { --accent: #6c63ff; }
+    body { background: #0a0a1a; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; }
+    .grad { background: linear-gradient(135deg, #6c63ff 0%, #3b82f6 50%, #06b6d4 100%); }
+    .grad-text { background: linear-gradient(90deg,#6c63ff,#3b82f6,#06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(12px); }
+    .glow { box-shadow: 0 0 40px rgba(108,99,255,0.3); }
+    .plan-card:hover { transform: translateY(-8px); box-shadow: 0 20px 60px rgba(108,99,255,0.3); }
+    .plan-card { transition: all 0.3s ease; }
+    nav { background: rgba(10,10,26,0.9); backdrop-filter: blur(20px); }
+    .hero-bg { background: radial-gradient(ellipse at 50% 0%, rgba(108,99,255,0.2) 0%, transparent 70%); }
+    .stat-item:hover .stat-num { color: #6c63ff; }
+    .counter { font-variant-numeric: tabular-nums; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-20px)} }
+    .float { animation: float 6s ease-in-out infinite; }
+    @keyframes pulse-glow { 0%,100%{opacity:0.6} 50%{opacity:1} }
+    .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="fixed top-0 w-full z-50 border-b border-white/5">
+  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 text-xl font-bold">
+      <i class="fa-solid fa-circle-bolt text-indigo-400 text-2xl"></i>
+      <span class="grad-text">CryptoInvest</span>
+    </a>
+    <div class="hidden md:flex items-center gap-8 text-sm text-slate-400">
+      <a href="#plans" class="hover:text-white transition">Планы</a>
+      <a href="#how" class="hover:text-white transition">Как это работает</a>
+      <a href="#stats" class="hover:text-white transition">Статистика</a>
+      <a href="#faq" class="hover:text-white transition">FAQ</a>
+    </div>
+    <div class="flex gap-3">
+      <a href="/login" class="px-4 py-2 text-sm text-slate-300 hover:text-white transition">Войти</a>
+      <a href="/login#register" class="px-4 py-2 text-sm font-semibold rounded-lg grad glow hover:opacity-90 transition">
+        Начать инвестировать
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero-bg min-h-screen flex items-center pt-16">
+  <div class="max-w-7xl mx-auto px-6 py-24 grid lg:grid-cols-2 gap-12 items-center">
+    <div>
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm mb-6 pulse-glow">
+        <i class="fa-solid fa-circle-dot text-xs"></i>
+        Платформа работает · +$24,810 выплачено сегодня
+      </div>
+      <h1 class="text-5xl lg:text-6xl font-black leading-tight mb-6">
+        Вложи деньги —<br />
+        <span class="grad-text">мы их умножим</span>
+      </h1>
+      <p class="text-xl text-slate-400 mb-8 leading-relaxed">
+        Профессиональная команда трейдеров торгует на крипторынках 24/7.
+        Начни с <strong class="text-white">$100</strong> и получай до <strong class="text-white">2.5% в день</strong>.
+      </p>
+      <div class="flex flex-wrap gap-4">
+        <a href="/login#register" class="px-8 py-4 rounded-xl font-bold text-lg grad glow hover:opacity-90 transition">
+          <i class="fa-solid fa-rocket mr-2"></i>Начать инвестировать
+        </a>
+        <a href="#how" class="px-8 py-4 rounded-xl font-semibold text-slate-300 card hover:bg-white/8 transition">
+          Узнать больше <i class="fa-solid fa-arrow-down ml-2"></i>
+        </a>
+      </div>
+      <div class="mt-10 flex gap-8 text-center">
+        <div>
+          <div class="text-3xl font-black text-white counter" id="c-users">2,847</div>
+          <div class="text-sm text-slate-500 mt-1">Активных инвесторов</div>
+        </div>
+        <div class="w-px bg-white/10"></div>
+        <div>
+          <div class="text-3xl font-black text-white counter">$4.2M</div>
+          <div class="text-sm text-slate-500 mt-1">Под управлением</div>
+        </div>
+        <div class="w-px bg-white/10"></div>
+        <div>
+          <div class="text-3xl font-black text-white counter">98.6%</div>
+          <div class="text-sm text-slate-500 mt-1">Довольных клиентов</div>
+        </div>
+      </div>
+    </div>
+    <div class="relative hidden lg:flex items-center justify-center">
+      <div class="float relative">
+        <div class="w-80 h-80 rounded-3xl grad opacity-20 absolute inset-0 blur-3xl"></div>
+        <div class="relative card rounded-3xl p-8 w-80">
+          <div class="flex items-center justify-between mb-6">
+            <span class="text-slate-400 text-sm">Мой портфель</span>
+            <span class="text-green-400 text-sm font-semibold"><i class="fa-solid fa-arrow-trend-up"></i> +18.4%</span>
+          </div>
+          <div class="text-4xl font-black text-white mb-2">$12,840</div>
+          <div class="text-slate-400 text-sm mb-6">Вложено: $10,000 · Прибыль: +$2,840</div>
+          <div class="space-y-3">
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-400">BTC/USDT</span>
+              <span class="text-green-400">+3.2%</span>
+            </div>
+            <div class="w-full bg-white/5 rounded-full h-2">
+              <div class="h-2 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500" style="width:68%"></div>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-400">ETH/USDT</span>
+              <span class="text-green-400">+5.1%</span>
+            </div>
+            <div class="w-full bg-white/5 rounded-full h-2">
+              <div class="h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500" style="width:45%"></div>
+            </div>
+          </div>
+          <div class="mt-6 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-center">
+            <span class="text-green-400 font-semibold">+$256.80 сегодня</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="py-24 px-6">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl font-black mb-4">Как это работает</h2>
+      <p class="text-slate-400 text-lg">Три простых шага к пассивному доходу</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="card rounded-2xl p-8 text-center hover:bg-white/6 transition">
+        <div class="w-16 h-16 rounded-2xl grad flex items-center justify-center text-2xl mx-auto mb-6">1</div>
+        <h3 class="text-xl font-bold mb-3">Регистрация</h3>
+        <p class="text-slate-400">Создай аккаунт за 1 минуту. Никаких сложных верификаций — только email и пароль.</p>
+      </div>
+      <div class="card rounded-2xl p-8 text-center hover:bg-white/6 transition">
+        <div class="w-16 h-16 rounded-2xl grad flex items-center justify-center text-2xl mx-auto mb-6">2</div>
+        <h3 class="text-xl font-bold mb-3">Пополни баланс</h3>
+        <p class="text-slate-400">Переводи USDT через TRC20, BEP20 или ERC20. Минимальный депозит — <strong class="text-white">$100</strong>.</p>
+      </div>
+      <div class="card rounded-2xl p-8 text-center hover:bg-white/6 transition">
+        <div class="w-16 h-16 rounded-2xl grad flex items-center justify-center text-2xl mx-auto mb-6">3</div>
+        <h3 class="text-xl font-bold mb-3">Получай прибыль</h3>
+        <p class="text-slate-400">Ежедневно начисляем прибыль на твой счёт. Выводи в любое время без комиссий.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANS -->
+<section id="plans" class="py-24 px-6 bg-gradient-to-b from-transparent to-indigo-950/20">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl font-black mb-4">Инвестиционные планы</h2>
+      <p class="text-slate-400 text-lg">Выбери план по размеру капитала</p>
+    </div>
+    <div id="plans-grid" class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section class="py-24 px-6">
+  <div class="max-w-3xl mx-auto">
+    <div class="card rounded-3xl p-10">
+      <h2 class="text-3xl font-black mb-2 text-center">Калькулятор прибыли</h2>
+      <p class="text-slate-400 text-center mb-8">Узнай, сколько ты заработаешь</p>
+      <div class="grid sm:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label class="text-sm text-slate-400 mb-2 block">Сумма инвестиции ($)</label>
+          <input id="calc-amount" type="number" value="1000" min="100"
+            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+        </div>
+        <div>
+          <label class="text-sm text-slate-400 mb-2 block">Период (дни)</label>
+          <input id="calc-days" type="number" value="30" min="1" max="365"
+            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+        </div>
+      </div>
+      <div class="mb-6">
+        <label class="text-sm text-slate-400 mb-2 block">Ежедневный % прибыли</label>
+        <input id="calc-pct" type="range" min="1" max="2.5" step="0.1" value="1.5"
+          class="w-full accent-indigo-500" oninput="document.getElementById('calc-pct-val').textContent=this.value+'%'" />
+        <div class="flex justify-between text-sm text-slate-500 mt-1">
+          <span>1% (Starter)</span>
+          <span id="calc-pct-val" class="text-indigo-400 font-bold">1.5%</span>
+          <span>2.5% (VIP)</span>
+        </div>
+      </div>
+      <div id="calc-result" class="grid grid-cols-3 gap-4 p-6 rounded-2xl bg-indigo-500/10 border border-indigo-500/20">
+        <div class="text-center">
+          <div class="text-slate-400 text-xs mb-1">Прибыль</div>
+          <div id="r-profit" class="text-2xl font-black text-green-400">$450</div>
+        </div>
+        <div class="text-center">
+          <div class="text-slate-400 text-xs mb-1">Итого</div>
+          <div id="r-total" class="text-2xl font-black text-white">$1 450</div>
+        </div>
+        <div class="text-center">
+          <div class="text-slate-400 text-xs mb-1">ROI</div>
+          <div id="r-roi" class="text-2xl font-black text-indigo-400">45%</div>
+        </div>
+      </div>
+      <a href="/login#register" class="mt-6 w-full block text-center py-4 rounded-xl grad font-bold text-lg hover:opacity-90 transition">
+        Начать зарабатывать
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section id="stats" class="py-24 px-6 bg-indigo-950/20">
+  <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-8 text-center">
+    <div class="stat-item">
+      <div class="stat-num text-5xl font-black text-white mb-2 transition-colors">$4.2M+</div>
+      <div class="text-slate-400">Средств под управлением</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num text-5xl font-black text-white mb-2 transition-colors">2847</div>
+      <div class="text-slate-400">Активных инвесторов</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num text-5xl font-black text-white mb-2 transition-colors">98.6%</div>
+      <div class="text-slate-400">Успешных сделок</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num text-5xl font-black text-white mb-2 transition-colors">3 года</div>
+      <div class="text-slate-400">На рынке</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="py-24 px-6">
+  <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+    <div>
+      <h2 class="text-4xl font-black mb-6">Почему выбирают нас</h2>
+      <div class="space-y-6">
+        <div class="flex gap-4 items-start">
+          <div class="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-shield-halved text-indigo-400"></i>
+          </div>
+          <div>
+            <h3 class="font-bold mb-1">Безопасность депозита</h3>
+            <p class="text-slate-400 text-sm">Средства хранятся в холодных кошельках с мультиподписью. Страхование VIP-депозитов.</p>
+          </div>
+        </div>
+        <div class="flex gap-4 items-start">
+          <div class="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-clock text-green-400"></i>
+          </div>
+          <div>
+            <h3 class="font-bold mb-1">Выплаты 24/7</h3>
+            <p class="text-slate-400 text-sm">Прибыль начисляется ежедневно. Вывод средств обрабатывается в течение 12 часов.</p>
+          </div>
+        </div>
+        <div class="flex gap-4 items-start">
+          <div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-robot text-purple-400"></i>
+          </div>
+          <div>
+            <h3 class="font-bold mb-1">Алгоритмическая торговля</h3>
+            <p class="text-slate-400 text-sm">Наши боты торгуют арбитражем, DeFi и деривативами — без эмоций, только математика.</p>
+          </div>
+        </div>
+        <div class="flex gap-4 items-start">
+          <div class="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-users text-cyan-400"></i>
+          </div>
+          <div>
+            <h3 class="font-bold mb-1">Реферальная программа</h3>
+            <p class="text-slate-400 text-sm">Приглашай друзей и получай 5% от их первого депозита на свой баланс.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="card rounded-2xl p-6">
+        <i class="fa-brands fa-bitcoin text-orange-400 text-3xl mb-3"></i>
+        <div class="font-bold mb-1">Bitcoin</div>
+        <div class="text-green-400 text-sm">+12.4% за неделю</div>
+      </div>
+      <div class="card rounded-2xl p-6">
+        <i class="fa-brands fa-ethereum text-purple-400 text-3xl mb-3"></i>
+        <div class="font-bold mb-1">Ethereum</div>
+        <div class="text-green-400 text-sm">+8.7% за неделю</div>
+      </div>
+      <div class="card rounded-2xl p-6">
+        <i class="fa-solid fa-wave-square text-blue-400 text-3xl mb-3"></i>
+        <div class="font-bold mb-1">DeFi Арбитраж</div>
+        <div class="text-green-400 text-sm">+3.2% в день</div>
+      </div>
+      <div class="card rounded-2xl p-6">
+        <i class="fa-solid fa-chart-candlestick text-cyan-400 text-3xl mb-3"></i>
+        <div class="font-bold mb-1">Фьючерсы</div>
+        <div class="text-green-400 text-sm">+1.8% в день</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="py-24 px-6 bg-indigo-950/20">
+  <div class="max-w-3xl mx-auto">
+    <h2 class="text-4xl font-black text-center mb-12">Частые вопросы</h2>
+    <div class="space-y-4" id="faq-list">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="border-t border-white/5 py-12 px-6">
+  <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-8">
+    <div>
+      <div class="flex items-center gap-2 mb-4 text-xl font-bold">
+        <i class="fa-solid fa-circle-bolt text-indigo-400"></i>
+        <span class="grad-text">CryptoInvest</span>
+      </div>
+      <p class="text-slate-500 text-sm">Профессиональное управление криптоактивами. Работаем с 2021 года.</p>
+    </div>
+    <div>
+      <div class="font-semibold mb-4">Продукт</div>
+      <div class="space-y-2 text-slate-400 text-sm">
+        <div><a href="#plans" class="hover:text-white transition">Инвестиционные планы</a></div>
+        <div><a href="/login#register" class="hover:text-white transition">Регистрация</a></div>
+        <div><a href="/dashboard" class="hover:text-white transition">Личный кабинет</a></div>
+      </div>
+    </div>
+    <div>
+      <div class="font-semibold mb-4">Компания</div>
+      <div class="space-y-2 text-slate-400 text-sm">
+        <div><a href="#how" class="hover:text-white transition">Как это работает</a></div>
+        <div><a href="#stats" class="hover:text-white transition">Статистика</a></div>
+        <div><a href="#faq" class="hover:text-white transition">FAQ</a></div>
+      </div>
+    </div>
+    <div>
+      <div class="font-semibold mb-4">Контакты</div>
+      <div class="space-y-2 text-slate-400 text-sm">
+        <div><i class="fa-brands fa-telegram mr-2"></i><a href="#" class="hover:text-white transition">@cryptoinvest_support</a></div>
+        <div><i class="fa-solid fa-envelope mr-2"></i>support@cryptoinvest.io</div>
+      </div>
+    </div>
+  </div>
+  <div class="max-w-7xl mx-auto mt-8 pt-8 border-t border-white/5 text-center text-slate-600 text-sm">
+    © 2024 CryptoInvest. Инвестиции сопряжены с рисками. Прошлые результаты не гарантируют будущую доходность.
+  </div>
+</footer>
+
+<script>
+const API = '';
+
+// Load plans
+async function loadPlans() {
+  try {
+    const res = await fetch(API + '/api/plans');
+    const plans = await res.json();
+    const colors = { blue: 'indigo', green: 'green', purple: 'purple', yellow: 'yellow' };
+    const grid = document.getElementById('plans-grid');
+    grid.innerHTML = plans.map(p => {
+      const features = JSON.parse(p.features || '[]');
+      const c = colors[p.color] || 'indigo';
+      const monthly = (p.daily_return_pct * p.duration_days).toFixed(0);
+      return `
+      <div class="plan-card card rounded-2xl p-8 flex flex-col ${p.color === 'yellow' ? 'border-yellow-500/40 bg-yellow-500/5' : ''}">
+        <div class="text-${c}-400 text-3xl mb-4"><i class="fa-solid fa-${p.icon}"></i></div>
+        <h3 class="text-xl font-black mb-1">${p.name}</h3>
+        <p class="text-slate-400 text-sm mb-4">${p.description}</p>
+        <div class="text-4xl font-black text-white mb-1">${p.daily_return_pct}%<span class="text-base font-normal text-slate-400">/день</span></div>
+        <div class="text-sm text-${c}-400 mb-6">~${monthly}% за 30 дней</div>
+        <ul class="space-y-2 mb-8 flex-1">
+          ${features.map(f => `<li class="flex items-center gap-2 text-sm text-slate-300"><i class="fa-solid fa-check text-${c}-400 text-xs"></i>${f}</li>`).join('')}
+        </ul>
+        <div class="text-xs text-slate-500 mb-4">От $${p.min_amount.toLocaleString()}${p.max_amount ? ' до $'+p.max_amount.toLocaleString() : '+'}</div>
+        <a href="/login#register" class="block text-center py-3 rounded-xl font-semibold ${p.color==='yellow' ? 'bg-yellow-500 text-black hover:bg-yellow-400' : 'grad hover:opacity-90'} transition">
+          Выбрать план
+        </a>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    console.error('Plans load error', e);
+  }
+}
+
+// Calculator
+function calcUpdate() {
+  const amount = parseFloat(document.getElementById('calc-amount').value) || 0;
+  const days = parseFloat(document.getElementById('calc-days').value) || 0;
+  const pct = parseFloat(document.getElementById('calc-pct').value) || 0;
+  const profit = amount * (pct / 100) * days;
+  const total = amount + profit;
+  document.getElementById('r-profit').textContent = '$' + profit.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  document.getElementById('r-total').textContent = '$' + total.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  document.getElementById('r-roi').textContent = (profit / amount * 100).toFixed(1) + '%';
+}
+['calc-amount','calc-days','calc-pct'].forEach(id => {
+  document.getElementById(id)?.addEventListener('input', calcUpdate);
+});
+calcUpdate();
+
+// FAQ
+const faqs = [
+  { q: 'Как вывести прибыль?', a: 'Зайди в личный кабинет → "Вывод средств", укажи сумму и USDT-адрес. Заявки обрабатываются в течение 12 часов.' },
+  { q: 'Какой минимальный депозит?', a: 'Минимальная сумма пополнения — $100. Принимаем USDT (TRC20, BEP20, ERC20).' },
+  { q: 'Как часто начисляется прибыль?', a: 'Прибыль начисляется ежедневно на баланс твоего аккаунта.' },
+  { q: 'Могу ли я инвестировать в несколько планов?', a: 'Да, ты можешь открыть несколько активных инвестиций в разных планах одновременно.' },
+  { q: 'Что происходит по окончании срока инвестиции?', a: 'По завершении периода тело депозита + накопленная прибыль автоматически зачисляются на твой баланс.' },
+  { q: 'Есть ли реферальная программа?', a: 'Да! Приглашай друзей по своей реферальной ссылке и получай 5% от их первого депозита.' },
+];
+document.getElementById('faq-list').innerHTML = faqs.map((f, i) => `
+  <div class="card rounded-xl overflow-hidden">
+    <button onclick="toggleFaq(${i})" class="w-full text-left px-6 py-4 flex justify-between items-center hover:bg-white/4 transition">
+      <span class="font-semibold">${f.q}</span>
+      <i id="faq-icon-${i}" class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+    </button>
+    <div id="faq-body-${i}" class="hidden px-6 pb-4 text-slate-400 text-sm leading-relaxed">${f.a}</div>
+  </div>`).join('');
+
+function toggleFaq(i) {
+  const body = document.getElementById('faq-body-' + i);
+  const icon = document.getElementById('faq-icon-' + i);
+  const hidden = body.classList.toggle('hidden');
+  icon.style.transform = hidden ? '' : 'rotate(180deg)';
+}
+
+loadPlans();
+</script>
+</body>
+</html>

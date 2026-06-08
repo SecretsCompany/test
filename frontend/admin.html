@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Админ-панель — CryptoInvest</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body { background: #0a0a1a; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; }
+    .grad { background: linear-gradient(135deg, #6c63ff, #3b82f6, #06b6d4); }
+    .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+    .sidebar { background: rgba(15,15,35,0.95); border-right: 1px solid rgba(255,255,255,0.06); }
+    .nav-item:hover,.nav-item.active { background:rgba(108,99,255,0.15); color:#a5b4fc; }
+    .nav-item { transition: all 0.2s; }
+    input,select { background: rgba(255,255,255,0.05) !important; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    td { padding: 12px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+  </style>
+</head>
+<body class="flex min-h-screen">
+
+<!-- SIDEBAR -->
+<aside class="sidebar w-60 flex-shrink-0 flex flex-col fixed h-full z-30">
+  <div class="p-5 border-b border-white/5">
+    <a href="/" class="flex items-center gap-2 text-base font-bold">
+      <i class="fa-solid fa-circle-bolt text-indigo-400"></i>
+      <span>CryptoInvest</span>
+      <span class="ml-1 text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full">ADMIN</span>
+    </a>
+  </div>
+  <nav class="flex-1 p-3 space-y-1">
+    <button onclick="setTab('dashboard')" id="nav-dashboard" class="nav-item active w-full text-left px-4 py-2.5 rounded-xl flex items-center gap-3 text-sm">
+      <i class="fa-solid fa-gauge w-4"></i> Дашборд
+    </button>
+    <button onclick="setTab('users')" id="nav-users" class="nav-item w-full text-left px-4 py-2.5 rounded-xl flex items-center gap-3 text-sm">
+      <i class="fa-solid fa-users w-4"></i> Пользователи
+    </button>
+    <button onclick="setTab('deposits')" id="nav-deposits" class="nav-item w-full text-left px-4 py-2.5 rounded-xl flex items-center gap-3 text-sm">
+      <i class="fa-solid fa-wallet w-4"></i> Депозиты
+    </button>
+    <button onclick="setTab('withdrawals')" id="nav-withdrawals" class="nav-item w-full text-left px-4 py-2.5 rounded-xl flex items-center gap-3 text-sm">
+      <i class="fa-solid fa-money-bill-transfer w-4"></i> Выводы
+    </button>
+    <div class="pt-2 border-t border-white/5 mt-2">
+      <button onclick="accrueAll()" class="w-full text-left px-4 py-2.5 rounded-xl flex items-center gap-3 text-sm text-green-400 hover:bg-green-500/10 transition">
+        <i class="fa-solid fa-rotate w-4"></i> Начислить прибыль
+      </button>
+    </div>
+  </nav>
+  <div class="p-4 border-t border-white/5">
+    <button onclick="logout()" class="w-full text-left px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition">
+      <i class="fa-solid fa-right-from-bracket mr-2"></i>Выйти
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="ml-60 flex-1 p-6">
+
+  <!-- DASHBOARD TAB -->
+  <div id="tab-dashboard" class="tab-content active">
+    <h1 class="text-2xl font-black mb-6">Обзор платформы</h1>
+    <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      <div class="card rounded-2xl p-5">
+        <div class="text-slate-400 text-xs mb-1">Всего пользователей</div>
+        <div class="text-3xl font-black" id="s-users">—</div>
+      </div>
+      <div class="card rounded-2xl p-5">
+        <div class="text-slate-400 text-xs mb-1">Всего инвестировано</div>
+        <div class="text-3xl font-black text-green-400" id="s-invested">—</div>
+      </div>
+      <div class="card rounded-2xl p-5">
+        <div class="text-slate-400 text-xs mb-1">Прибыли выплачено</div>
+        <div class="text-3xl font-black text-yellow-400" id="s-profit">—</div>
+      </div>
+      <div class="card rounded-2xl p-5">
+        <div class="text-slate-400 text-xs mb-1">Активных инвестиций</div>
+        <div class="text-3xl font-black text-indigo-400" id="s-active">—</div>
+      </div>
+      <div class="card rounded-2xl p-5">
+        <div class="text-slate-400 text-xs mb-1">Ожидают вывода</div>
+        <div class="text-3xl font-black text-red-400" id="s-pending">—</div>
+      </div>
+      <div class="card rounded-2xl p-5">
+        <div class="text-slate-400 text-xs mb-1">Баланс на счетах</div>
+        <div class="text-3xl font-black text-blue-400" id="s-balance">—</div>
+      </div>
+    </div>
+    <div id="accrue-result" class="hidden card rounded-xl p-4 text-green-400 text-sm mb-4"></div>
+  </div>
+
+  <!-- USERS TAB -->
+  <div id="tab-users" class="tab-content">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-black">Пользователи</h1>
+      <button onclick="loadUsers()" class="text-sm text-slate-400 hover:text-white transition">
+        <i class="fa-solid fa-rotate mr-2"></i>Обновить
+      </button>
+    </div>
+    <div class="card rounded-2xl overflow-hidden">
+      <div id="users-loading" class="p-4 text-slate-500 text-sm">Загрузка...</div>
+      <div id="users-table" class="hidden overflow-x-auto">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>Имя / Email</th><th>Баланс</th><th>Инвест.</th><th>Прибыль</th><th>Статус</th><th>Дата</th><th>Действия</th>
+            </tr>
+          </thead>
+          <tbody id="users-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- User edit modal -->
+    <div id="user-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,0.7)">
+      <div class="card rounded-2xl p-6 w-full max-w-md">
+        <h3 class="font-bold mb-4">Редактировать пользователя <span id="modal-user-id" class="text-indigo-400"></span></h3>
+        <div class="space-y-4">
+          <div>
+            <label class="text-xs text-slate-400 mb-1 block">Баланс ($)</label>
+            <input id="modal-balance" type="number" class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none" />
+          </div>
+          <div class="flex gap-4">
+            <label class="flex items-center gap-2 text-sm cursor-pointer">
+              <input type="checkbox" id="modal-active" class="accent-indigo-500" />
+              Активен
+            </label>
+            <label class="flex items-center gap-2 text-sm cursor-pointer">
+              <input type="checkbox" id="modal-verified" class="accent-indigo-500" />
+              Верифицирован
+            </label>
+            <label class="flex items-center gap-2 text-sm cursor-pointer">
+              <input type="checkbox" id="modal-admin" class="accent-red-500" />
+              Админ
+            </label>
+          </div>
+        </div>
+        <div id="modal-error" class="hidden mt-3 p-3 rounded-xl bg-red-500/10 text-red-400 text-sm"></div>
+        <div class="flex gap-3 mt-6">
+          <button onclick="closeUserModal()" class="flex-1 py-3 rounded-xl border border-white/10 text-slate-400 hover:bg-white/5 transition">Отмена</button>
+          <button onclick="saveUser()" class="flex-1 py-3 rounded-xl grad font-semibold hover:opacity-90 transition">Сохранить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEPOSITS TAB -->
+  <div id="tab-deposits" class="tab-content">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-black">Заявки на депозит</h1>
+      <button onclick="loadDeposits()" class="text-sm text-slate-400 hover:text-white transition">
+        <i class="fa-solid fa-rotate mr-2"></i>Обновить
+      </button>
+    </div>
+    <div class="card rounded-2xl overflow-hidden">
+      <div id="dep-loading" class="p-4 text-slate-500 text-sm">Загрузка...</div>
+      <div id="dep-table" class="hidden overflow-x-auto">
+        <table>
+          <thead>
+            <tr><th>ID</th><th>Пользователь</th><th>Сумма</th><th>Описание</th><th>Дата</th><th>Действия</th></tr>
+          </thead>
+          <tbody id="dep-body"></tbody>
+        </table>
+      </div>
+      <div id="dep-empty" class="hidden p-4 text-slate-500 text-sm">Нет ожидающих заявок</div>
+    </div>
+  </div>
+
+  <!-- WITHDRAWALS TAB -->
+  <div id="tab-withdrawals" class="tab-content">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-black">Заявки на вывод</h1>
+      <button onclick="loadWithdrawals()" class="text-sm text-slate-400 hover:text-white transition">
+        <i class="fa-solid fa-rotate mr-2"></i>Обновить
+      </button>
+    </div>
+    <div class="card rounded-2xl overflow-hidden">
+      <div id="wd-loading" class="p-4 text-slate-500 text-sm">Загрузка...</div>
+      <div id="wd-table" class="hidden overflow-x-auto">
+        <table>
+          <thead>
+            <tr><th>ID</th><th>Пользователь</th><th>Сумма</th><th>Кошелёк</th><th>Сеть</th><th>Дата</th><th>Действия</th></tr>
+          </thead>
+          <tbody id="wd-body"></tbody>
+        </table>
+      </div>
+      <div id="wd-empty" class="hidden p-4 text-slate-500 text-sm">Нет ожидающих заявок</div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const API = '';
+let token = localStorage.getItem('token');
+let editingUserId = null;
+let allUsers = [];
+
+if (!token) window.location.href = '/login';
+
+async function apiFetch(path, opts = {}) {
+  const res = await fetch(API + path, {
+    ...opts,
+    headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json', ...(opts.headers||{}) },
+  });
+  if (res.status === 401 || res.status === 403) { logout(); }
+  return res;
+}
+
+function fmt(v) { return '$' + parseFloat(v||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+function fmtDate(d) { return new Date(d).toLocaleDateString('ru-RU', {day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}); }
+
+async function loadStats() {
+  const res = await apiFetch('/api/admin/stats');
+  const s = await res.json();
+  document.getElementById('s-users').textContent = s.total_users;
+  document.getElementById('s-invested').textContent = fmt(s.total_invested);
+  document.getElementById('s-profit').textContent = fmt(s.total_profit_paid);
+  document.getElementById('s-active').textContent = s.active_investments;
+  document.getElementById('s-pending').textContent = s.pending_withdrawals;
+  document.getElementById('s-balance').textContent = fmt(s.total_balance);
+}
+
+async function loadUsers() {
+  document.getElementById('users-loading').classList.remove('hidden');
+  document.getElementById('users-table').classList.add('hidden');
+  const res = await apiFetch('/api/admin/users?limit=100');
+  allUsers = await res.json();
+  const body = document.getElementById('users-body');
+  body.innerHTML = allUsers.map(u => `
+    <tr>
+      <td class="text-slate-400">#${u.id}</td>
+      <td>
+        <div class="font-semibold">${u.full_name}</div>
+        <div class="text-xs text-slate-400">${u.email}</div>
+      </td>
+      <td class="font-semibold">${fmt(u.balance)}</td>
+      <td>${fmt(u.total_invested)}</td>
+      <td class="text-green-400">${fmt(u.total_profit)}</td>
+      <td>
+        ${u.is_active ? '<span class="text-xs bg-green-500/10 text-green-400 px-2 py-0.5 rounded-full">активен</span>' : '<span class="text-xs bg-red-500/10 text-red-400 px-2 py-0.5 rounded-full">заблокирован</span>'}
+        ${u.is_admin ? '<span class="ml-1 text-xs bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded-full">admin</span>' : ''}
+      </td>
+      <td class="text-slate-400 text-xs">${fmtDate(u.created_at)}</td>
+      <td>
+        <button onclick="openUserModal(${u.id})" class="text-indigo-400 hover:text-indigo-300 text-xs mr-3">Изменить</button>
+      </td>
+    </tr>`).join('');
+  document.getElementById('users-loading').classList.add('hidden');
+  document.getElementById('users-table').classList.remove('hidden');
+}
+
+function openUserModal(userId) {
+  const u = allUsers.find(u => u.id === userId);
+  if (!u) return;
+  editingUserId = userId;
+  document.getElementById('modal-user-id').textContent = '#' + userId + ' — ' + u.full_name;
+  document.getElementById('modal-balance').value = u.balance;
+  document.getElementById('modal-active').checked = u.is_active;
+  document.getElementById('modal-verified').checked = u.is_verified;
+  document.getElementById('modal-admin').checked = u.is_admin;
+  document.getElementById('modal-error').classList.add('hidden');
+  document.getElementById('user-modal').classList.remove('hidden');
+}
+
+function closeUserModal() {
+  document.getElementById('user-modal').classList.add('hidden');
+  editingUserId = null;
+}
+
+async function saveUser() {
+  if (!editingUserId) return;
+  const errEl = document.getElementById('modal-error');
+  errEl.classList.add('hidden');
+  try {
+    const res = await apiFetch('/api/admin/users/' + editingUserId, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        balance: parseFloat(document.getElementById('modal-balance').value),
+        is_active: document.getElementById('modal-active').checked,
+        is_verified: document.getElementById('modal-verified').checked,
+        is_admin: document.getElementById('modal-admin').checked,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Ошибка');
+    closeUserModal();
+    await loadUsers();
+    await loadStats();
+  } catch (e) {
+    errEl.textContent = e.message;
+    errEl.classList.remove('hidden');
+  }
+}
+
+async function loadDeposits() {
+  document.getElementById('dep-loading').classList.remove('hidden');
+  document.getElementById('dep-table').classList.add('hidden');
+  document.getElementById('dep-empty').classList.add('hidden');
+  const res = await apiFetch('/api/admin/deposits');
+  const deps = await res.json();
+  document.getElementById('dep-loading').classList.add('hidden');
+  if (!deps.length) { document.getElementById('dep-empty').classList.remove('hidden'); return; }
+  document.getElementById('dep-body').innerHTML = deps.map(d => `
+    <tr>
+      <td class="text-slate-400">#${d.id}</td>
+      <td class="text-slate-400">user #${d.user_id}</td>
+      <td class="font-semibold text-green-400">${fmt(d.amount)}</td>
+      <td class="text-xs text-slate-400">${d.description || '—'}</td>
+      <td class="text-xs text-slate-400">${fmtDate(d.created_at)}</td>
+      <td class="flex gap-2">
+        <button onclick="processDeposit(${d.id},'completed')" class="text-xs px-3 py-1.5 rounded-lg bg-green-500/10 text-green-400 hover:bg-green-500/20 transition">Подтвердить</button>
+        <button onclick="processDeposit(${d.id},'rejected')" class="text-xs px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition">Отклонить</button>
+      </td>
+    </tr>`).join('');
+  document.getElementById('dep-table').classList.remove('hidden');
+}
+
+async function processDeposit(id, status) {
+  await apiFetch('/api/admin/deposits/' + id, { method: 'PATCH', body: JSON.stringify({ status }) });
+  await loadDeposits();
+  await loadStats();
+}
+
+async function loadWithdrawals() {
+  document.getElementById('wd-loading').classList.remove('hidden');
+  document.getElementById('wd-table').classList.add('hidden');
+  document.getElementById('wd-empty').classList.add('hidden');
+  const res = await apiFetch('/api/admin/withdrawals?status=pending');
+  const wds = await res.json();
+  document.getElementById('wd-loading').classList.add('hidden');
+  if (!wds.length) { document.getElementById('wd-empty').classList.remove('hidden'); return; }
+  document.getElementById('wd-body').innerHTML = wds.map(w => `
+    <tr>
+      <td class="text-slate-400">#${w.id}</td>
+      <td class="text-slate-400">user #${w.user_id}</td>
+      <td class="font-semibold text-red-400">${fmt(w.amount)}</td>
+      <td class="font-mono text-xs">${w.wallet_address.slice(0,16)}...</td>
+      <td><span class="text-xs bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-full">${w.network}</span></td>
+      <td class="text-xs text-slate-400">${fmtDate(w.created_at)}</td>
+      <td class="flex gap-2">
+        <button onclick="processWd(${w.id},'completed')" class="text-xs px-3 py-1.5 rounded-lg bg-green-500/10 text-green-400 hover:bg-green-500/20 transition">Выплатить</button>
+        <button onclick="processWd(${w.id},'rejected')" class="text-xs px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition">Отклонить</button>
+      </td>
+    </tr>`).join('');
+  document.getElementById('wd-table').classList.remove('hidden');
+}
+
+async function processWd(id, status) {
+  const note = status === 'rejected' ? prompt('Причина отклонения (необязательно):') : null;
+  await apiFetch('/api/admin/withdrawals/' + id, { method: 'PATCH', body: JSON.stringify({ status, admin_note: note }) });
+  await loadWithdrawals();
+  await loadStats();
+}
+
+async function accrueAll() {
+  const res = await apiFetch('/api/admin/accrue-profits', { method: 'POST' });
+  const data = await res.json();
+  const el = document.getElementById('accrue-result');
+  el.textContent = '✓ ' + data.message;
+  el.classList.remove('hidden');
+  await loadStats();
+  setTimeout(() => el.classList.add('hidden'), 5000);
+}
+
+function setTab(name) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+  if (name === 'users') loadUsers();
+  if (name === 'deposits') loadDeposits();
+  if (name === 'withdrawals') loadWithdrawals();
+}
+
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = '/login';
+}
+
+loadStats();
+</script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Войти — CryptoInvest</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body { background: #0a0a1a; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; }
+    .grad { background: linear-gradient(135deg, #6c63ff, #3b82f6, #06b6d4); }
+    .grad-text { background: linear-gradient(90deg,#6c63ff,#3b82f6,#06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+    input { background: rgba(255,255,255,0.05) !important; }
+    input:focus { border-color: #6c63ff !important; box-shadow: 0 0 0 1px #6c63ff !important; }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+  <div class="w-full max-w-md">
+    <a href="/" class="flex items-center justify-center gap-2 text-xl font-bold mb-8">
+      <i class="fa-solid fa-circle-bolt text-indigo-400 text-2xl"></i>
+      <span class="grad-text">CryptoInvest</span>
+    </a>
+
+    <!-- Tabs -->
+    <div class="flex rounded-xl overflow-hidden border border-white/10 mb-6">
+      <button id="tab-login" onclick="showTab('login')"
+        class="flex-1 py-3 font-semibold text-sm transition tab-active">Войти</button>
+      <button id="tab-register" onclick="showTab('register')"
+        class="flex-1 py-3 font-semibold text-sm transition">Регистрация</button>
+    </div>
+
+    <!-- Login Form -->
+    <div id="form-login" class="card rounded-2xl p-8">
+      <h2 class="text-2xl font-black mb-6">Вход в аккаунт</h2>
+      <div id="login-error" class="hidden mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"></div>
+      <form onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="text-sm text-slate-400 mb-2 block">Email</label>
+          <input id="l-email" type="email" required placeholder="you@example.com"
+            class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none" />
+        </div>
+        <div>
+          <label class="text-sm text-slate-400 mb-2 block">Пароль</label>
+          <div class="relative">
+            <input id="l-password" type="password" required placeholder="••••••••"
+              class="w-full border border-white/10 rounded-xl px-4 py-3 pr-12 text-white focus:outline-none" />
+            <button type="button" onclick="togglePass('l-password')"
+              class="absolute right-4 top-3.5 text-slate-400 hover:text-white">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        <button type="submit" id="login-btn"
+          class="w-full py-4 rounded-xl grad font-bold text-lg hover:opacity-90 transition">
+          Войти
+        </button>
+      </form>
+      <p class="text-center text-slate-400 text-sm mt-6">
+        Нет аккаунта?
+        <button onclick="showTab('register')" class="text-indigo-400 hover:text-indigo-300 ml-1">Зарегистрируйся</button>
+      </p>
+    </div>
+
+    <!-- Register Form -->
+    <div id="form-register" class="card rounded-2xl p-8 hidden">
+      <h2 class="text-2xl font-black mb-6">Создать аккаунт</h2>
+      <div id="register-error" class="hidden mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"></div>
+      <div id="register-success" class="hidden mb-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm"></div>
+      <form onsubmit="handleRegister(event)" class="space-y-4">
+        <div>
+          <label class="text-sm text-slate-400 mb-2 block">Полное имя</label>
+          <input id="r-name" type="text" required placeholder="Иван Иванов"
+            class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none" />
+        </div>
+        <div>
+          <label class="text-sm text-slate-400 mb-2 block">Email</label>
+          <input id="r-email" type="email" required placeholder="you@example.com"
+            class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none" />
+        </div>
+        <div>
+          <label class="text-sm text-slate-400 mb-2 block">Телефон (необязательно)</label>
+          <input id="r-phone" type="tel" placeholder="+7 900 000 00 00"
+            class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none" />
+        </div>
+        <div>
+          <label class="text-sm text-slate-400 mb-2 block">Пароль</label>
+          <div class="relative">
+            <input id="r-password" type="password" required placeholder="Минимум 8 символов"
+              class="w-full border border-white/10 rounded-xl px-4 py-3 pr-12 text-white focus:outline-none" />
+            <button type="button" onclick="togglePass('r-password')"
+              class="absolute right-4 top-3.5 text-slate-400 hover:text-white">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        <div>
+          <label class="text-sm text-slate-400 mb-2 block">Реферальный код (необязательно)</label>
+          <input id="r-ref" type="text" placeholder="XXXXXXXX"
+            class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none" />
+        </div>
+        <button type="submit" id="reg-btn"
+          class="w-full py-4 rounded-xl grad font-bold text-lg hover:opacity-90 transition">
+          Создать аккаунт
+        </button>
+      </form>
+      <p class="text-center text-slate-400 text-sm mt-6">
+        Уже есть аккаунт?
+        <button onclick="showTab('login')" class="text-indigo-400 hover:text-indigo-300 ml-1">Войти</button>
+      </p>
+    </div>
+
+    <p class="text-center text-slate-600 text-xs mt-6">
+      Регистрируясь, вы принимаете условия использования. Инвестиции сопряжены с рисками.
+    </p>
+  </div>
+
+<script>
+const API = '';
+
+function showTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('form-login').classList.toggle('hidden', !isLogin);
+  document.getElementById('form-register').classList.toggle('hidden', isLogin);
+  document.getElementById('tab-login').classList.toggle('grad', isLogin);
+  document.getElementById('tab-login').classList.toggle('text-slate-400', !isLogin);
+  document.getElementById('tab-register').classList.toggle('grad', !isLogin);
+  document.getElementById('tab-register').classList.toggle('text-slate-400', isLogin);
+}
+
+function togglePass(id) {
+  const el = document.getElementById(id);
+  el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const btn = document.getElementById('login-btn');
+  const errEl = document.getElementById('login-error');
+  btn.disabled = true;
+  btn.textContent = 'Входим...';
+  errEl.classList.add('hidden');
+
+  try {
+    const res = await fetch(API + '/api/users/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: document.getElementById('l-email').value,
+        password: document.getElementById('l-password').value,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Ошибка входа');
+    localStorage.setItem('token', data.access_token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    window.location.href = data.user.is_admin ? '/admin' : '/dashboard';
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.classList.remove('hidden');
+    btn.disabled = false;
+    btn.textContent = 'Войти';
+  }
+}
+
+async function handleRegister(e) {
+  e.preventDefault();
+  const btn = document.getElementById('reg-btn');
+  const errEl = document.getElementById('register-error');
+  const sucEl = document.getElementById('register-success');
+  btn.disabled = true;
+  btn.textContent = 'Создаём аккаунт...';
+  errEl.classList.add('hidden');
+  sucEl.classList.add('hidden');
+
+  try {
+    const res = await fetch(API + '/api/users/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        full_name: document.getElementById('r-name').value,
+        email: document.getElementById('r-email').value,
+        phone: document.getElementById('r-phone').value || null,
+        password: document.getElementById('r-password').value,
+        referral_code: document.getElementById('r-ref').value || null,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Ошибка регистрации');
+    localStorage.setItem('token', data.access_token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    window.location.href = '/dashboard';
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.classList.remove('hidden');
+    btn.disabled = false;
+    btn.textContent = 'Создать аккаунт';
+  }
+}
+
+// Auto-switch to register tab if hash says so
+if (window.location.hash === '#register') showTab('register');
+else showTab('login');
+</script>
+</body>
+</html>

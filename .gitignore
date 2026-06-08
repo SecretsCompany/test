@@ -1,0 +1,4 @@
+crypto_invest.db
+__pycache__/
+*.pyc
+.env

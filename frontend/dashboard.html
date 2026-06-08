@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Личный кабинет — CryptoInvest</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body { background: #0a0a1a; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; }
+    .grad { background: linear-gradient(135deg, #6c63ff, #3b82f6, #06b6d4); }
+    .grad-text { background: linear-gradient(90deg,#6c63ff,#3b82f6,#06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+    .sidebar { background: rgba(15,15,35,0.95); border-right: 1px solid rgba(255,255,255,0.06); }
+    .nav-item:hover, .nav-item.active { background: rgba(108,99,255,0.15); color: #a5b4fc; }
+    .nav-item { transition: all 0.2s; }
+    input { background: rgba(255,255,255,0.05) !important; }
+    input:focus { border-color: #6c63ff !important; box-shadow: 0 0 0 1px #6c63ff !important; }
+    .modal-bg { background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body class="flex min-h-screen">
+
+<!-- SIDEBAR -->
+<aside class="sidebar w-64 flex-shrink-0 flex flex-col fixed h-full z-30">
+  <div class="p-6 border-b border-white/5">
+    <a href="/" class="flex items-center gap-2 text-lg font-bold">
+      <i class="fa-solid fa-circle-bolt text-indigo-400"></i>
+      <span class="grad-text">CryptoInvest</span>
+    </a>
+  </div>
+  <nav class="flex-1 p-4 space-y-1">
+    <button onclick="setTab('overview')" id="nav-overview"
+      class="nav-item active w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 text-sm">
+      <i class="fa-solid fa-chart-pie w-5"></i> Обзор
+    </button>
+    <button onclick="setTab('invest')" id="nav-invest"
+      class="nav-item w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 text-sm">
+      <i class="fa-solid fa-arrow-trend-up w-5"></i> Инвестировать
+    </button>
+    <button onclick="setTab('deposit')" id="nav-deposit"
+      class="nav-item w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 text-sm">
+      <i class="fa-solid fa-wallet w-5"></i> Пополнить
+    </button>
+    <button onclick="setTab('withdraw')" id="nav-withdraw"
+      class="nav-item w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 text-sm">
+      <i class="fa-solid fa-money-bill-transfer w-5"></i> Вывод
+    </button>
+    <button onclick="setTab('history')" id="nav-history"
+      class="nav-item w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 text-sm">
+      <i class="fa-solid fa-clock-rotate-left w-5"></i> История
+    </button>
+    <button onclick="setTab('referral')" id="nav-referral"
+      class="nav-item w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 text-sm">
+      <i class="fa-solid fa-users w-5"></i> Рефералы
+    </button>
+  </nav>
+  <div class="p-4 border-t border-white/5">
+    <div id="sidebar-user" class="flex items-center gap-3 mb-3">
+      <div class="w-9 h-9 rounded-full grad flex items-center justify-center text-sm font-bold">?</div>
+      <div class="flex-1 min-w-0">
+        <div class="font-semibold text-sm truncate" id="sb-name">...</div>
+        <div class="text-xs text-slate-400 truncate" id="sb-email">...</div>
+      </div>
+    </div>
+    <button onclick="logout()" class="w-full text-left px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition">
+      <i class="fa-solid fa-right-from-bracket mr-2"></i>Выйти
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="ml-64 flex-1 p-8">
+
+  <!-- OVERVIEW TAB -->
+  <div id="tab-overview" class="tab-content active">
+    <h1 class="text-2xl font-black mb-6">Добро пожаловать, <span id="user-name">...</span> 👋</h1>
+
+    <!-- Balance cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="card rounded-2xl p-5">
+        <div class="text-slate-400 text-xs mb-2">Баланс</div>
+        <div class="text-2xl font-black text-white" id="stat-balance">$0</div>
+        <div class="text-xs text-green-400 mt-1"><i class="fa-solid fa-arrow-up"></i> Доступно для инвестиций</div>
+      </div>
+      <div class="card rounded-2xl p-5">
+        <div class="text-slate-400 text-xs mb-2">Инвестировано</div>
+        <div class="text-2xl font-black text-white" id="stat-invested">$0</div>
+        <div class="text-xs text-slate-400 mt-1">Всего вложено</div>
+      </div>
+      <div class="card rounded-2xl p-5">
+        <div class="text-slate-400 text-xs mb-2">Прибыль</div>
+        <div class="text-2xl font-black text-green-400" id="stat-profit">$0</div>
+        <div class="text-xs text-slate-400 mt-1">Всего заработано</div>
+      </div>
+      <div class="card rounded-2xl p-5">
+        <div class="text-slate-400 text-xs mb-2">Активных инвестиций</div>
+        <div class="text-2xl font-black text-indigo-400" id="stat-active">0</div>
+        <div class="text-xs text-slate-400 mt-1">Сейчас работают</div>
+      </div>
+    </div>
+
+    <!-- Active investments -->
+    <h2 class="text-lg font-bold mb-4">Активные инвестиции</h2>
+    <div id="active-investments" class="space-y-3 mb-8">
+      <div class="text-slate-500 text-sm">Загрузка...</div>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <button onclick="setTab('invest')" class="card rounded-xl p-4 text-left hover:bg-white/6 transition">
+        <i class="fa-solid fa-arrow-trend-up text-green-400 text-xl mb-2"></i>
+        <div class="font-semibold text-sm">Новая инвестиция</div>
+        <div class="text-xs text-slate-400 mt-1">Выбрать план и вложить</div>
+      </button>
+      <button onclick="setTab('deposit')" class="card rounded-xl p-4 text-left hover:bg-white/6 transition">
+        <i class="fa-solid fa-wallet text-blue-400 text-xl mb-2"></i>
+        <div class="font-semibold text-sm">Пополнить баланс</div>
+        <div class="text-xs text-slate-400 mt-1">Депозит от $100</div>
+      </button>
+      <button onclick="setTab('withdraw')" class="card rounded-xl p-4 text-left hover:bg-white/6 transition">
+        <i class="fa-solid fa-money-bill-transfer text-purple-400 text-xl mb-2"></i>
+        <div class="font-semibold text-sm">Вывести средства</div>
+        <div class="text-xs text-slate-400 mt-1">На крипто-кошелёк</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- INVEST TAB -->
+  <div id="tab-invest" class="tab-content">
+    <h1 class="text-2xl font-black mb-2">Инвестировать</h1>
+    <p class="text-slate-400 mb-6">Выбери план и укажи сумму</p>
+    <div id="invest-plans" class="grid md:grid-cols-2 gap-4 mb-6">
+      <div class="text-slate-500 text-sm">Загрузка планов...</div>
+    </div>
+    <div id="invest-form" class="hidden card rounded-2xl p-6 max-w-md">
+      <h3 class="font-bold mb-4">Создать инвестицию: <span id="inv-plan-name" class="text-indigo-400"></span></h3>
+      <div id="inv-error" class="hidden mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"></div>
+      <div id="inv-success" class="hidden mb-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm"></div>
+      <label class="text-sm text-slate-400 mb-2 block">Сумма ($)</label>
+      <input id="inv-amount" type="number" placeholder="100"
+        class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none mb-4" />
+      <div class="text-xs text-slate-400 mb-4" id="inv-plan-info"></div>
+      <div class="flex gap-3">
+        <button onclick="cancelInvest()" class="flex-1 py-3 rounded-xl border border-white/10 text-slate-400 hover:bg-white/5 transition">
+          Отмена
+        </button>
+        <button onclick="submitInvestment()" id="inv-btn"
+          class="flex-1 py-3 rounded-xl grad font-semibold hover:opacity-90 transition">
+          Вложить
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEPOSIT TAB -->
+  <div id="tab-deposit" class="tab-content">
+    <h1 class="text-2xl font-black mb-2">Пополнить баланс</h1>
+    <p class="text-slate-400 mb-6">Отправь USDT на указанный адрес и заполни форму</p>
+    <div class="grid lg:grid-cols-2 gap-6">
+      <div class="card rounded-2xl p-6">
+        <h3 class="font-bold mb-4">Наши реквизиты</h3>
+        <div class="space-y-4">
+          <div>
+            <div class="text-xs text-slate-400 mb-2">USDT TRC20 (рекомендуем)</div>
+            <div class="bg-white/5 rounded-xl p-3 font-mono text-sm break-all select-all text-indigo-300" id="wallet-trc20">
+              TRX9j4VzDmFY7hGk...
+            </div>
+            <button onclick="copyWallet('trc20')" class="mt-2 text-xs text-indigo-400 hover:text-indigo-300">
+              <i class="fa-solid fa-copy mr-1"></i>Скопировать
+            </button>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 mb-2">USDT BEP20</div>
+            <div class="bg-white/5 rounded-xl p-3 font-mono text-sm break-all select-all text-indigo-300" id="wallet-bep20">
+              0x8f3Cf7ad23Cd3Cf...
+            </div>
+            <button onclick="copyWallet('bep20')" class="mt-2 text-xs text-indigo-400 hover:text-indigo-300">
+              <i class="fa-solid fa-copy mr-1"></i>Скопировать
+            </button>
+          </div>
+        </div>
+        <div class="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-yellow-400 text-xs">
+          <i class="fa-solid fa-triangle-exclamation mr-2"></i>
+          Минимальный депозит — $100. После отправки обязательно заполни форму.
+        </div>
+      </div>
+      <div class="card rounded-2xl p-6">
+        <h3 class="font-bold mb-4">Подтвердить депозит</h3>
+        <div id="dep-error" class="hidden mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"></div>
+        <div id="dep-success" class="hidden mb-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm"></div>
+        <form onsubmit="submitDeposit(event)" class="space-y-4">
+          <div>
+            <label class="text-sm text-slate-400 mb-2 block">Сумма депозита ($)</label>
+            <input id="dep-amount" type="number" min="100" placeholder="100"
+              class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none" required />
+          </div>
+          <div>
+            <label class="text-sm text-slate-400 mb-2 block">Хэш транзакции (TX Hash)</label>
+            <input id="dep-hash" type="text" placeholder="0x..."
+              class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none" />
+          </div>
+          <div>
+            <label class="text-sm text-slate-400 mb-2 block">Адрес отправителя</label>
+            <input id="dep-wallet" type="text" placeholder="Ваш кошелёк"
+              class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none" />
+          </div>
+          <button type="submit" id="dep-btn"
+            class="w-full py-4 rounded-xl grad font-bold hover:opacity-90 transition">
+            Отправить заявку
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- WITHDRAW TAB -->
+  <div id="tab-withdraw" class="tab-content">
+    <h1 class="text-2xl font-black mb-2">Вывод средств</h1>
+    <p class="text-slate-400 mb-6">Заявки обрабатываются в течение 12 часов</p>
+    <div class="grid lg:grid-cols-2 gap-6">
+      <div class="card rounded-2xl p-6">
+        <div id="wd-error" class="hidden mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"></div>
+        <div id="wd-success" class="hidden mb-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm"></div>
+        <div class="mb-4 p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+          <div class="text-xs text-slate-400 mb-1">Доступно для вывода</div>
+          <div class="text-2xl font-black text-white" id="wd-balance">$0</div>
+        </div>
+        <form onsubmit="submitWithdrawal(event)" class="space-y-4">
+          <div>
+            <label class="text-sm text-slate-400 mb-2 block">Сумма ($)</label>
+            <input id="wd-amount" type="number" min="10" placeholder="10"
+              class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none" required />
+          </div>
+          <div>
+            <label class="text-sm text-slate-400 mb-2 block">USDT-адрес получателя</label>
+            <input id="wd-wallet" type="text" placeholder="Ваш кошелёк"
+              class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none" required />
+          </div>
+          <div>
+            <label class="text-sm text-slate-400 mb-2 block">Сеть</label>
+            <select id="wd-network"
+              class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none" style="background:rgba(255,255,255,0.05)">
+              <option value="TRC20">USDT TRC20</option>
+              <option value="BEP20">USDT BEP20</option>
+              <option value="ERC20">USDT ERC20</option>
+            </select>
+          </div>
+          <button type="submit" id="wd-btn"
+            class="w-full py-4 rounded-xl grad font-bold hover:opacity-90 transition">
+            Отправить заявку
+          </button>
+        </form>
+      </div>
+      <div class="card rounded-2xl p-6">
+        <h3 class="font-bold mb-4">История выводов</h3>
+        <div id="wd-history" class="space-y-2">
+          <div class="text-slate-500 text-sm">Загрузка...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div id="tab-history" class="tab-content">
+    <h1 class="text-2xl font-black mb-6">История транзакций</h1>
+    <div class="card rounded-2xl overflow-hidden">
+      <div id="tx-list" class="divide-y divide-white/5">
+        <div class="p-4 text-slate-500 text-sm">Загрузка...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFERRAL TAB -->
+  <div id="tab-referral" class="tab-content">
+    <h1 class="text-2xl font-black mb-2">Реферальная программа</h1>
+    <p class="text-slate-400 mb-6">Приглашай друзей — получай 5% от их первого депозита</p>
+    <div class="card rounded-2xl p-6 max-w-lg">
+      <div class="text-xs text-slate-400 mb-2">Твой реферальный код</div>
+      <div class="flex gap-3">
+        <div class="flex-1 bg-white/5 rounded-xl px-4 py-3 font-mono text-indigo-400 font-bold text-lg" id="ref-code">...</div>
+        <button onclick="copyRef()" class="px-4 py-3 rounded-xl card hover:bg-white/8 transition text-slate-300">
+          <i class="fa-solid fa-copy"></i>
+        </button>
+      </div>
+      <div class="mt-4 text-xs text-slate-400 mb-2">Реферальная ссылка</div>
+      <div class="flex gap-3">
+        <div class="flex-1 bg-white/5 rounded-xl px-4 py-3 text-xs text-slate-300 font-mono overflow-hidden truncate" id="ref-link">...</div>
+        <button onclick="copyRefLink()" class="px-4 py-3 rounded-xl card hover:bg-white/8 transition text-slate-300">
+          <i class="fa-solid fa-copy"></i>
+        </button>
+      </div>
+      <div class="mt-6 p-4 rounded-xl bg-green-500/10 border border-green-500/20">
+        <div class="text-xs text-slate-400 mb-1">Заработано с рефералов</div>
+        <div class="text-2xl font-black text-green-400">$0</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const API = '';
+let token = localStorage.getItem('token');
+let user = null;
+let plans = [];
+let selectedPlan = null;
+
+if (!token) window.location.href = '/login';
+
+async function apiFetch(path, opts = {}) {
+  const res = await fetch(API + path, {
+    ...opts,
+    headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json', ...(opts.headers || {}) },
+  });
+  if (res.status === 401) { logout(); return; }
+  return res;
+}
+
+function fmt(v) {
+  return '$' + parseFloat(v || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function fmtDate(d) {
+  return new Date(d).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+async function loadUser() {
+  const res = await apiFetch('/api/users/me');
+  user = await res.json();
+  document.getElementById('user-name').textContent = user.full_name.split(' ')[0];
+  document.getElementById('sb-name').textContent = user.full_name;
+  document.getElementById('sb-email').textContent = user.email;
+  document.getElementById('sb-name').parentElement.previousElementSibling.textContent = user.full_name[0];
+  document.getElementById('stat-balance').textContent = fmt(user.balance);
+  document.getElementById('stat-invested').textContent = fmt(user.total_invested);
+  document.getElementById('stat-profit').textContent = fmt(user.total_profit);
+  document.getElementById('wd-balance').textContent = fmt(user.balance);
+  document.getElementById('ref-code').textContent = user.referral_code || '—';
+  const link = window.location.origin + '/login#register?ref=' + user.referral_code;
+  document.getElementById('ref-link').textContent = link;
+}
+
+async function loadInvestments() {
+  const res = await apiFetch('/api/users/me/investments');
+  const inv = await res.json();
+  const active = inv.filter(i => i.status === 'active');
+  document.getElementById('stat-active').textContent = active.length;
+  const el = document.getElementById('active-investments');
+  if (!active.length) {
+    el.innerHTML = '<p class="text-slate-500 text-sm">Нет активных инвестиций. <button onclick="setTab(\'invest\')" class="text-indigo-400 underline">Инвестировать →</button></p>';
+    return;
+  }
+  el.innerHTML = active.map(i => {
+    const pct = Math.min(100, (i.profit_accrued / (i.amount * i.plan.daily_return_pct / 100 * i.plan.duration_days)) * 100 || 0);
+    return `
+    <div class="card rounded-xl p-4">
+      <div class="flex justify-between items-start mb-3">
+        <div>
+          <span class="font-semibold">${i.plan.name}</span>
+          <span class="ml-2 text-xs text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full">${i.plan.daily_return_pct}%/день</span>
+        </div>
+        <span class="text-green-400 font-bold">${fmt(i.profit_accrued)}</span>
+      </div>
+      <div class="flex justify-between text-xs text-slate-400 mb-2">
+        <span>Вложено: ${fmt(i.amount)}</span>
+        <span>Прибыль: ${(i.plan.daily_return_pct * i.plan.duration_days).toFixed(0)}% за 30 дней</span>
+      </div>
+      <div class="w-full bg-white/5 rounded-full h-1.5">
+        <div class="h-1.5 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 transition-all" style="width:${pct.toFixed(1)}%"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function loadPlans() {
+  const res = await apiFetch('/api/plans');
+  plans = await res.json();
+  const colorMap = { blue: 'indigo', green: 'green', purple: 'purple', yellow: 'yellow' };
+  document.getElementById('invest-plans').innerHTML = plans.map(p => {
+    const c = colorMap[p.color] || 'indigo';
+    return `
+    <div class="card rounded-xl p-5 hover:bg-white/6 transition cursor-pointer" onclick="selectPlan(${p.id})">
+      <div class="flex justify-between items-start mb-3">
+        <div>
+          <div class="font-bold">${p.name}</div>
+          <div class="text-xs text-slate-400 mt-0.5">${p.description}</div>
+        </div>
+        <div class="text-right">
+          <div class="text-xl font-black text-${c}-400">${p.daily_return_pct}%</div>
+          <div class="text-xs text-slate-400">в день</div>
+        </div>
+      </div>
+      <div class="text-xs text-slate-500">От $${p.min_amount.toLocaleString()}${p.max_amount ? ' до $'+p.max_amount.toLocaleString() : '+'} · ${p.duration_days} дней</div>
+    </div>`;
+  }).join('');
+}
+
+function selectPlan(planId) {
+  selectedPlan = plans.find(p => p.id === planId);
+  if (!selectedPlan) return;
+  document.getElementById('invest-form').classList.remove('hidden');
+  document.getElementById('inv-plan-name').textContent = selectedPlan.name;
+  document.getElementById('inv-amount').value = selectedPlan.min_amount;
+  document.getElementById('inv-amount').min = selectedPlan.min_amount;
+  document.getElementById('inv-plan-info').textContent =
+    `${selectedPlan.daily_return_pct}%/день · ${selectedPlan.duration_days} дней · Доходность ~${(selectedPlan.daily_return_pct * selectedPlan.duration_days).toFixed(0)}% · Баланс: ${fmt(user?.balance)}`;
+  document.getElementById('inv-error').classList.add('hidden');
+  document.getElementById('inv-success').classList.add('hidden');
+}
+
+function cancelInvest() {
+  selectedPlan = null;
+  document.getElementById('invest-form').classList.add('hidden');
+}
+
+async function submitInvestment() {
+  if (!selectedPlan) return;
+  const amount = parseFloat(document.getElementById('inv-amount').value);
+  const errEl = document.getElementById('inv-error');
+  const sucEl = document.getElementById('inv-success');
+  const btn = document.getElementById('inv-btn');
+  errEl.classList.add('hidden');
+  sucEl.classList.add('hidden');
+  btn.disabled = true; btn.textContent = 'Обработка...';
+
+  try {
+    const res = await apiFetch('/api/invest', {
+      method: 'POST',
+      body: JSON.stringify({ plan_id: selectedPlan.id, amount }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Ошибка');
+    sucEl.textContent = `Инвестиция создана! Вложено ${fmt(amount)}. Ежедневная прибыль: ${fmt(amount * selectedPlan.daily_return_pct / 100)}`;
+    sucEl.classList.remove('hidden');
+    cancelInvest();
+    await loadUser();
+    await loadInvestments();
+  } catch (e) {
+    errEl.textContent = e.message;
+    errEl.classList.remove('hidden');
+  }
+  btn.disabled = false; btn.textContent = 'Вложить';
+}
+
+async function submitDeposit(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('dep-error');
+  const sucEl = document.getElementById('dep-success');
+  const btn = document.getElementById('dep-btn');
+  errEl.classList.add('hidden'); sucEl.classList.add('hidden');
+  btn.disabled = true; btn.textContent = 'Отправка...';
+
+  try {
+    const res = await apiFetch('/api/deposit', {
+      method: 'POST',
+      body: JSON.stringify({
+        amount: parseFloat(document.getElementById('dep-amount').value),
+        tx_hash: document.getElementById('dep-hash').value || null,
+        wallet_from: document.getElementById('dep-wallet').value || null,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Ошибка');
+    sucEl.textContent = 'Заявка отправлена! Ожидайте подтверждения в течение 30 минут.';
+    sucEl.classList.remove('hidden');
+    e.target.reset();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.classList.remove('hidden');
+  }
+  btn.disabled = false; btn.textContent = 'Отправить заявку';
+}
+
+async function submitWithdrawal(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('wd-error');
+  const sucEl = document.getElementById('wd-success');
+  const btn = document.getElementById('wd-btn');
+  errEl.classList.add('hidden'); sucEl.classList.add('hidden');
+  btn.disabled = true; btn.textContent = 'Отправка...';
+
+  try {
+    const res = await apiFetch('/api/withdraw', {
+      method: 'POST',
+      body: JSON.stringify({
+        amount: parseFloat(document.getElementById('wd-amount').value),
+        wallet_address: document.getElementById('wd-wallet').value,
+        network: document.getElementById('wd-network').value,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Ошибка');
+    sucEl.textContent = 'Заявка на вывод создана! Обработка до 12 часов.';
+    sucEl.classList.remove('hidden');
+    await loadUser();
+    await loadWithdrawals();
+    e.target.reset();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.classList.remove('hidden');
+  }
+  btn.disabled = false; btn.textContent = 'Отправить заявку';
+}
+
+async function loadTransactions() {
+  const res = await apiFetch('/api/users/me/transactions');
+  const txs = await res.json();
+  const statusColor = { completed: 'green', pending: 'yellow', rejected: 'red' };
+  const typeIcon = { deposit: 'arrow-down text-green-400', withdrawal: 'arrow-up text-red-400', profit: 'coins text-yellow-400', bonus: 'gift text-purple-400' };
+  const typeName = { deposit: 'Депозит', withdrawal: 'Вывод', profit: 'Прибыль', bonus: 'Бонус' };
+  document.getElementById('tx-list').innerHTML = txs.length
+    ? txs.map(t => `
+      <div class="p-4 flex items-center justify-between hover:bg-white/2 transition">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center">
+            <i class="fa-solid fa-${typeIcon[t.type] || 'circle'}"></i>
+          </div>
+          <div>
+            <div class="font-semibold text-sm">${typeName[t.type] || t.type}</div>
+            <div class="text-xs text-slate-400">${fmtDate(t.created_at)}</div>
+            ${t.description ? `<div class="text-xs text-slate-500 mt-0.5">${t.description}</div>` : ''}
+          </div>
+        </div>
+        <div class="text-right">
+          <div class="font-bold ${t.amount > 0 ? 'text-green-400' : 'text-red-400'}">${t.amount > 0 ? '+' : ''}${fmt(Math.abs(t.amount))}</div>
+          <div class="text-xs text-${statusColor[t.status] || 'slate'}-400 mt-0.5">${t.status}</div>
+        </div>
+      </div>`).join('')
+    : '<div class="p-4 text-slate-500 text-sm">Нет транзакций</div>';
+}
+
+async function loadWithdrawals() {
+  const res = await apiFetch('/api/users/me/withdrawals');
+  const wds = await res.json();
+  const statusColor = { pending: 'yellow', completed: 'green', rejected: 'red' };
+  document.getElementById('wd-history').innerHTML = wds.length
+    ? wds.map(w => `
+      <div class="p-3 rounded-xl card text-sm">
+        <div class="flex justify-between mb-1">
+          <span class="font-semibold">${fmt(w.amount)}</span>
+          <span class="text-${statusColor[w.status] || 'slate'}-400 text-xs">${w.status}</span>
+        </div>
+        <div class="text-xs text-slate-400">${w.network} · ${w.wallet_address.slice(0,12)}...</div>
+        <div class="text-xs text-slate-500 mt-1">${fmtDate(w.created_at)}</div>
+        ${w.admin_note ? `<div class="text-xs text-yellow-400 mt-1">${w.admin_note}</div>` : ''}
+      </div>`).join('')
+    : '<div class="text-slate-500 text-sm">Нет заявок</div>';
+}
+
+function setTab(name) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+  if (name === 'history') loadTransactions();
+  if (name === 'withdraw') loadWithdrawals();
+}
+
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = '/login';
+}
+
+function copyRef() {
+  navigator.clipboard.writeText(document.getElementById('ref-code').textContent);
+}
+function copyRefLink() {
+  navigator.clipboard.writeText(document.getElementById('ref-link').textContent);
+}
+function copyWallet(net) {
+  navigator.clipboard.writeText(document.getElementById('wallet-'+net).textContent.trim());
+}
+
+// Init
+async function init() {
+  await loadUser();
+  await loadInvestments();
+  await loadPlans();
+}
+init().catch(console.error);
+</script>
+</body>
+</html>
