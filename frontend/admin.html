@@ -10,28 +10,36 @@
     body { background: #0a0a1a; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; }
     .grad { background: linear-gradient(135deg, #6c63ff, #3b82f6, #06b6d4); }
     .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
-    .sidebar { background: rgba(15,15,35,0.95); border-right: 1px solid rgba(255,255,255,0.06); }
+    .sidebar { background: rgba(15,15,35,0.98); border-right: 1px solid rgba(255,255,255,0.06); }
     .nav-item:hover,.nav-item.active { background:rgba(108,99,255,0.15); color:#a5b4fc; }
     .nav-item { transition: all 0.2s; }
     input,select { background: rgba(255,255,255,0.05) !important; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
     table { width: 100%; border-collapse: collapse; }
-    th { text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; border-bottom: 1px solid rgba(255,255,255,0.06); }
-    td { padding: 12px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    th { text-align: left; padding: 8px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    td { padding: 10px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.04); }
     tr:hover td { background: rgba(255,255,255,0.02); }
+    .sidebar-overlay { background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
   </style>
 </head>
 <body class="flex min-h-screen">
 
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div id="sidebar-overlay" class="sidebar-overlay hidden fixed inset-0 z-40 lg:hidden" onclick="closeSidebar()"></div>
+
 <!-- SIDEBAR -->
-<aside class="sidebar w-60 flex-shrink-0 flex flex-col fixed h-full z-30">
-  <div class="p-5 border-b border-white/5">
+<aside id="sidebar" class="sidebar w-60 flex-shrink-0 flex flex-col fixed h-full z-50
+  -translate-x-full lg:translate-x-0 transition-transform duration-300">
+  <div class="p-5 border-b border-white/5 flex items-center justify-between">
     <a href="/" class="flex items-center gap-2 text-base font-bold">
       <i class="fa-solid fa-circle-bolt text-indigo-400"></i>
       <span>CryptoInvest</span>
       <span class="ml-1 text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full">ADMIN</span>
     </a>
+    <button onclick="closeSidebar()" class="lg:hidden text-slate-400 hover:text-white">
+      <i class="fa-solid fa-xmark text-xl"></i>
+    </button>
   </div>
   <nav class="flex-1 p-3 space-y-1">
     <button onclick="setTab('dashboard')" id="nav-dashboard" class="nav-item active w-full text-left px-4 py-2.5 rounded-xl flex items-center gap-3 text-sm">
@@ -59,36 +67,49 @@
   </div>
 </aside>
 
+<!-- TOP BAR (mobile) -->
+<header class="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 h-14
+  bg-[#0a0a1a]/95 border-b border-white/5 backdrop-blur-lg">
+  <button onclick="openSidebar()" class="text-slate-400 hover:text-white p-2 -ml-2">
+    <i class="fa-solid fa-bars text-lg"></i>
+  </button>
+  <span class="font-bold text-sm flex items-center gap-2">
+    <i class="fa-solid fa-circle-bolt text-indigo-400"></i>Admin
+  </span>
+  <div class="w-8"></div>
+</header>
+
 <!-- MAIN -->
-<main class="ml-60 flex-1 p-6">
+<main class="lg:ml-60 flex-1 pt-14 lg:pt-0">
+<div class="p-4 sm:p-6">
 
   <!-- DASHBOARD TAB -->
   <div id="tab-dashboard" class="tab-content active">
-    <h1 class="text-2xl font-black mb-6">Обзор платформы</h1>
-    <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-      <div class="card rounded-2xl p-5">
-        <div class="text-slate-400 text-xs mb-1">Всего пользователей</div>
-        <div class="text-3xl font-black" id="s-users">—</div>
+    <h1 class="text-xl sm:text-2xl font-black mb-5 sm:mb-6">Обзор платформы</h1>
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
+      <div class="card rounded-xl sm:rounded-2xl p-4 sm:p-5">
+        <div class="text-slate-400 text-xs mb-1">Пользователей</div>
+        <div class="text-2xl sm:text-3xl font-black" id="s-users">—</div>
       </div>
-      <div class="card rounded-2xl p-5">
-        <div class="text-slate-400 text-xs mb-1">Всего инвестировано</div>
-        <div class="text-3xl font-black text-green-400" id="s-invested">—</div>
+      <div class="card rounded-xl sm:rounded-2xl p-4 sm:p-5">
+        <div class="text-slate-400 text-xs mb-1">Инвестировано</div>
+        <div class="text-2xl sm:text-3xl font-black text-green-400" id="s-invested">—</div>
       </div>
-      <div class="card rounded-2xl p-5">
-        <div class="text-slate-400 text-xs mb-1">Прибыли выплачено</div>
-        <div class="text-3xl font-black text-yellow-400" id="s-profit">—</div>
+      <div class="card rounded-xl sm:rounded-2xl p-4 sm:p-5">
+        <div class="text-slate-400 text-xs mb-1">Выплачено</div>
+        <div class="text-2xl sm:text-3xl font-black text-yellow-400" id="s-profit">—</div>
       </div>
-      <div class="card rounded-2xl p-5">
-        <div class="text-slate-400 text-xs mb-1">Активных инвестиций</div>
-        <div class="text-3xl font-black text-indigo-400" id="s-active">—</div>
+      <div class="card rounded-xl sm:rounded-2xl p-4 sm:p-5">
+        <div class="text-slate-400 text-xs mb-1">Активных</div>
+        <div class="text-2xl sm:text-3xl font-black text-indigo-400" id="s-active">—</div>
       </div>
-      <div class="card rounded-2xl p-5">
-        <div class="text-slate-400 text-xs mb-1">Ожидают вывода</div>
-        <div class="text-3xl font-black text-red-400" id="s-pending">—</div>
+      <div class="card rounded-xl sm:rounded-2xl p-4 sm:p-5">
+        <div class="text-slate-400 text-xs mb-1">На вывод</div>
+        <div class="text-2xl sm:text-3xl font-black text-red-400" id="s-pending">—</div>
       </div>
-      <div class="card rounded-2xl p-5">
-        <div class="text-slate-400 text-xs mb-1">Баланс на счетах</div>
-        <div class="text-3xl font-black text-blue-400" id="s-balance">—</div>
+      <div class="card rounded-xl sm:rounded-2xl p-4 sm:p-5">
+        <div class="text-slate-400 text-xs mb-1">На счетах</div>
+        <div class="text-2xl sm:text-3xl font-black text-blue-400" id="s-balance">—</div>
       </div>
     </div>
     <div id="accrue-result" class="hidden card rounded-xl p-4 text-green-400 text-sm mb-4"></div>
@@ -193,9 +214,18 @@
     </div>
   </div>
 
+</div><!-- /p-4 sm:p-6 -->
 </main>
 
 <script>
+function openSidebar() {
+  document.getElementById('sidebar').classList.remove('-translate-x-full');
+  document.getElementById('sidebar-overlay').classList.remove('hidden');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.add('-translate-x-full');
+  document.getElementById('sidebar-overlay').classList.add('hidden');
+}
 const API = '';
 let token = localStorage.getItem('token');
 let editingUserId = null;
@@ -373,9 +403,11 @@ function setTab(name) {
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   document.getElementById('nav-' + name).classList.add('active');
+  closeSidebar();
   if (name === 'users') loadUsers();
   if (name === 'deposits') loadDeposits();
   if (name === 'withdrawals') loadWithdrawals();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function logout() {

@@ -29,9 +29,9 @@
 
 <!-- NAV -->
 <nav class="fixed top-0 w-full z-50 border-b border-white/5">
-  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-    <a href="/" class="flex items-center gap-2 text-xl font-bold">
-      <i class="fa-solid fa-circle-bolt text-indigo-400 text-2xl"></i>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-lg sm:text-xl">
+      <i class="fa-solid fa-circle-bolt text-indigo-400 text-xl sm:text-2xl"></i>
       <span class="grad-text">CryptoInvest</span>
     </a>
     <div class="hidden md:flex items-center gap-8 text-sm text-slate-400">
@@ -40,53 +40,55 @@
       <a href="#stats" class="hover:text-white transition">Статистика</a>
       <a href="#faq" class="hover:text-white transition">FAQ</a>
     </div>
-    <div class="flex gap-3">
-      <a href="/login" class="px-4 py-2 text-sm text-slate-300 hover:text-white transition">Войти</a>
-      <a href="/login#register" class="px-4 py-2 text-sm font-semibold rounded-lg grad glow hover:opacity-90 transition">
-        Начать инвестировать
+    <div class="flex gap-2 sm:gap-3">
+      <a href="/login" class="px-3 sm:px-4 py-2 text-sm text-slate-300 hover:text-white transition">Войти</a>
+      <a href="/login#register" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg grad glow hover:opacity-90 transition whitespace-nowrap">
+        <span class="hidden sm:inline">Начать инвестировать</span>
+        <span class="sm:hidden">Начать</span>
       </a>
     </div>
   </div>
 </nav>
 
 <!-- HERO -->
-<section class="hero-bg min-h-screen flex items-center pt-16">
-  <div class="max-w-7xl mx-auto px-6 py-24 grid lg:grid-cols-2 gap-12 items-center">
+<section class="hero-bg min-h-screen flex items-center pt-14 sm:pt-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-24 grid lg:grid-cols-2 gap-10 items-center">
     <div>
-      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm mb-6 pulse-glow">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs sm:text-sm mb-5 sm:mb-6 pulse-glow">
         <i class="fa-solid fa-circle-dot text-xs"></i>
-        Платформа работает · +$24,810 выплачено сегодня
+        <span class="hidden sm:inline">Платформа работает · +$24,810 выплачено сегодня</span>
+        <span class="sm:hidden">+$24,810 выплачено сегодня</span>
       </div>
-      <h1 class="text-5xl lg:text-6xl font-black leading-tight mb-6">
+      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black leading-tight mb-4 sm:mb-6">
         Вложи деньги —<br />
         <span class="grad-text">мы их умножим</span>
       </h1>
-      <p class="text-xl text-slate-400 mb-8 leading-relaxed">
+      <p class="text-base sm:text-xl text-slate-400 mb-6 sm:mb-8 leading-relaxed">
         Профессиональная команда трейдеров торгует на крипторынках 24/7.
         Начни с <strong class="text-white">$100</strong> и получай до <strong class="text-white">2.5% в день</strong>.
       </p>
-      <div class="flex flex-wrap gap-4">
-        <a href="/login#register" class="px-8 py-4 rounded-xl font-bold text-lg grad glow hover:opacity-90 transition">
+      <div class="flex flex-wrap gap-3 sm:gap-4">
+        <a href="/login#register" class="flex-1 sm:flex-none text-center px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg grad glow hover:opacity-90 transition">
           <i class="fa-solid fa-rocket mr-2"></i>Начать инвестировать
         </a>
-        <a href="#how" class="px-8 py-4 rounded-xl font-semibold text-slate-300 card hover:bg-white/8 transition">
-          Узнать больше <i class="fa-solid fa-arrow-down ml-2"></i>
+        <a href="#how" class="flex-1 sm:flex-none text-center px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-slate-300 card hover:bg-white/8 transition">
+          Как это работает
         </a>
       </div>
-      <div class="mt-10 flex gap-8 text-center">
+      <div class="mt-8 sm:mt-10 grid grid-cols-3 gap-4 sm:flex sm:gap-8 text-center">
         <div>
-          <div class="text-3xl font-black text-white counter" id="c-users">2,847</div>
-          <div class="text-sm text-slate-500 mt-1">Активных инвесторов</div>
+          <div class="text-xl sm:text-3xl font-black text-white counter" id="c-users">2,847</div>
+          <div class="text-xs sm:text-sm text-slate-500 mt-1">Инвесторов</div>
         </div>
-        <div class="w-px bg-white/10"></div>
+        <div class="hidden sm:block w-px bg-white/10"></div>
         <div>
-          <div class="text-3xl font-black text-white counter">$4.2M</div>
-          <div class="text-sm text-slate-500 mt-1">Под управлением</div>
+          <div class="text-xl sm:text-3xl font-black text-white counter">$4.2M</div>
+          <div class="text-xs sm:text-sm text-slate-500 mt-1">Под управлением</div>
         </div>
-        <div class="w-px bg-white/10"></div>
+        <div class="hidden sm:block w-px bg-white/10"></div>
         <div>
-          <div class="text-3xl font-black text-white counter">98.6%</div>
-          <div class="text-sm text-slate-500 mt-1">Довольных клиентов</div>
+          <div class="text-xl sm:text-3xl font-black text-white counter">98.6%</div>
+          <div class="text-xs sm:text-sm text-slate-500 mt-1">Довольных</div>
         </div>
       </div>
     </div>
@@ -126,50 +128,50 @@
 </section>
 
 <!-- HOW IT WORKS -->
-<section id="how" class="py-24 px-6">
+<section id="how" class="py-16 sm:py-24 px-4 sm:px-6">
   <div class="max-w-7xl mx-auto">
-    <div class="text-center mb-16">
-      <h2 class="text-4xl font-black mb-4">Как это работает</h2>
-      <p class="text-slate-400 text-lg">Три простых шага к пассивному доходу</p>
+    <div class="text-center mb-10 sm:mb-16">
+      <h2 class="text-2xl sm:text-4xl font-black mb-3">Как это работает</h2>
+      <p class="text-slate-400 sm:text-lg">Три простых шага к пассивному доходу</p>
     </div>
-    <div class="grid md:grid-cols-3 gap-8">
-      <div class="card rounded-2xl p-8 text-center hover:bg-white/6 transition">
-        <div class="w-16 h-16 rounded-2xl grad flex items-center justify-center text-2xl mx-auto mb-6">1</div>
-        <h3 class="text-xl font-bold mb-3">Регистрация</h3>
-        <p class="text-slate-400">Создай аккаунт за 1 минуту. Никаких сложных верификаций — только email и пароль.</p>
+    <div class="grid sm:grid-cols-3 gap-4 sm:gap-8">
+      <div class="card rounded-2xl p-6 sm:p-8 text-center hover:bg-white/6 transition">
+        <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl grad flex items-center justify-center text-xl sm:text-2xl mx-auto mb-4 sm:mb-6">1</div>
+        <h3 class="text-lg sm:text-xl font-bold mb-2">Регистрация</h3>
+        <p class="text-slate-400 text-sm">Создай аккаунт за 1 минуту. Никаких сложных верификаций — только email и пароль.</p>
       </div>
-      <div class="card rounded-2xl p-8 text-center hover:bg-white/6 transition">
-        <div class="w-16 h-16 rounded-2xl grad flex items-center justify-center text-2xl mx-auto mb-6">2</div>
-        <h3 class="text-xl font-bold mb-3">Пополни баланс</h3>
-        <p class="text-slate-400">Переводи USDT через TRC20, BEP20 или ERC20. Минимальный депозит — <strong class="text-white">$100</strong>.</p>
+      <div class="card rounded-2xl p-6 sm:p-8 text-center hover:bg-white/6 transition">
+        <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl grad flex items-center justify-center text-xl sm:text-2xl mx-auto mb-4 sm:mb-6">2</div>
+        <h3 class="text-lg sm:text-xl font-bold mb-2">Пополни баланс</h3>
+        <p class="text-slate-400 text-sm">Переводи USDT через TRC20, BEP20 или ERC20. Минимальный депозит — <strong class="text-white">$100</strong>.</p>
       </div>
-      <div class="card rounded-2xl p-8 text-center hover:bg-white/6 transition">
-        <div class="w-16 h-16 rounded-2xl grad flex items-center justify-center text-2xl mx-auto mb-6">3</div>
-        <h3 class="text-xl font-bold mb-3">Получай прибыль</h3>
-        <p class="text-slate-400">Ежедневно начисляем прибыль на твой счёт. Выводи в любое время без комиссий.</p>
+      <div class="card rounded-2xl p-6 sm:p-8 text-center hover:bg-white/6 transition">
+        <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl grad flex items-center justify-center text-xl sm:text-2xl mx-auto mb-4 sm:mb-6">3</div>
+        <h3 class="text-lg sm:text-xl font-bold mb-2">Получай прибыль</h3>
+        <p class="text-slate-400 text-sm">Ежедневно начисляем прибыль на твой счёт. Выводи в любое время без комиссий.</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- PLANS -->
-<section id="plans" class="py-24 px-6 bg-gradient-to-b from-transparent to-indigo-950/20">
+<section id="plans" class="py-16 sm:py-24 px-4 sm:px-6 bg-gradient-to-b from-transparent to-indigo-950/20">
   <div class="max-w-7xl mx-auto">
-    <div class="text-center mb-16">
-      <h2 class="text-4xl font-black mb-4">Инвестиционные планы</h2>
-      <p class="text-slate-400 text-lg">Выбери план по размеру капитала</p>
+    <div class="text-center mb-10 sm:mb-16">
+      <h2 class="text-2xl sm:text-4xl font-black mb-3">Инвестиционные планы</h2>
+      <p class="text-slate-400 sm:text-lg">Выбери план по размеру капитала</p>
     </div>
-    <div id="plans-grid" class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div id="plans-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
       <!-- filled by JS -->
     </div>
   </div>
 </section>
 
 <!-- CALCULATOR -->
-<section class="py-24 px-6">
+<section class="py-16 sm:py-24 px-4 sm:px-6">
   <div class="max-w-3xl mx-auto">
-    <div class="card rounded-3xl p-10">
-      <h2 class="text-3xl font-black mb-2 text-center">Калькулятор прибыли</h2>
+    <div class="card rounded-2xl sm:rounded-3xl p-6 sm:p-10">
+      <h2 class="text-2xl sm:text-3xl font-black mb-2 text-center">Калькулятор прибыли</h2>
       <p class="text-slate-400 text-center mb-8">Узнай, сколько ты заработаешь</p>
       <div class="grid sm:grid-cols-2 gap-6 mb-6">
         <div>
@@ -215,32 +217,32 @@
 </section>
 
 <!-- STATS -->
-<section id="stats" class="py-24 px-6 bg-indigo-950/20">
-  <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-8 text-center">
+<section id="stats" class="py-16 sm:py-24 px-4 sm:px-6 bg-indigo-950/20">
+  <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 text-center">
     <div class="stat-item">
-      <div class="stat-num text-5xl font-black text-white mb-2 transition-colors">$4.2M+</div>
-      <div class="text-slate-400">Средств под управлением</div>
+      <div class="stat-num text-3xl sm:text-5xl font-black text-white mb-1 sm:mb-2 transition-colors">$4.2M+</div>
+      <div class="text-slate-400 text-sm sm:text-base">Под управлением</div>
     </div>
     <div class="stat-item">
-      <div class="stat-num text-5xl font-black text-white mb-2 transition-colors">2847</div>
-      <div class="text-slate-400">Активных инвесторов</div>
+      <div class="stat-num text-3xl sm:text-5xl font-black text-white mb-1 sm:mb-2 transition-colors">2847</div>
+      <div class="text-slate-400 text-sm sm:text-base">Инвесторов</div>
     </div>
     <div class="stat-item">
-      <div class="stat-num text-5xl font-black text-white mb-2 transition-colors">98.6%</div>
-      <div class="text-slate-400">Успешных сделок</div>
+      <div class="stat-num text-3xl sm:text-5xl font-black text-white mb-1 sm:mb-2 transition-colors">98.6%</div>
+      <div class="text-slate-400 text-sm sm:text-base">Успешных сделок</div>
     </div>
     <div class="stat-item">
-      <div class="stat-num text-5xl font-black text-white mb-2 transition-colors">3 года</div>
-      <div class="text-slate-400">На рынке</div>
+      <div class="stat-num text-3xl sm:text-5xl font-black text-white mb-1 sm:mb-2 transition-colors">3 года</div>
+      <div class="text-slate-400 text-sm sm:text-base">На рынке</div>
     </div>
   </div>
 </section>
 
 <!-- FEATURES -->
-<section class="py-24 px-6">
-  <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+<section class="py-16 sm:py-24 px-4 sm:px-6">
+  <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-10 sm:gap-16 items-center">
     <div>
-      <h2 class="text-4xl font-black mb-6">Почему выбирают нас</h2>
+      <h2 class="text-2xl sm:text-4xl font-black mb-5 sm:mb-6">Почему выбирают нас</h2>
       <div class="space-y-6">
         <div class="flex gap-4 items-start">
           <div class="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
@@ -306,9 +308,9 @@
 </section>
 
 <!-- FAQ -->
-<section id="faq" class="py-24 px-6 bg-indigo-950/20">
+<section id="faq" class="py-16 sm:py-24 px-4 sm:px-6 bg-indigo-950/20">
   <div class="max-w-3xl mx-auto">
-    <h2 class="text-4xl font-black text-center mb-12">Частые вопросы</h2>
+    <h2 class="text-2xl sm:text-4xl font-black text-center mb-8 sm:mb-12">Частые вопросы</h2>
     <div class="space-y-4" id="faq-list">
       <!-- filled by JS -->
     </div>
@@ -316,8 +318,8 @@
 </section>
 
 <!-- FOOTER -->
-<footer class="border-t border-white/5 py-12 px-6">
-  <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-8">
+<footer class="border-t border-white/5 py-10 sm:py-12 px-4 sm:px-6">
+  <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8">
     <div>
       <div class="flex items-center gap-2 mb-4 text-xl font-bold">
         <i class="fa-solid fa-circle-bolt text-indigo-400"></i>

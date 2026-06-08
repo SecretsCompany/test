@@ -11,295 +11,361 @@
     .grad { background: linear-gradient(135deg, #6c63ff, #3b82f6, #06b6d4); }
     .grad-text { background: linear-gradient(90deg,#6c63ff,#3b82f6,#06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
     .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
-    .sidebar { background: rgba(15,15,35,0.95); border-right: 1px solid rgba(255,255,255,0.06); }
+    .sidebar { background: rgba(15,15,35,0.98); border-right: 1px solid rgba(255,255,255,0.06); }
     .nav-item:hover, .nav-item.active { background: rgba(108,99,255,0.15); color: #a5b4fc; }
     .nav-item { transition: all 0.2s; }
-    input { background: rgba(255,255,255,0.05) !important; }
-    input:focus { border-color: #6c63ff !important; box-shadow: 0 0 0 1px #6c63ff !important; }
-    .modal-bg { background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); }
+    input,select { background: rgba(255,255,255,0.05) !important; }
+    input:focus,select:focus { border-color: #6c63ff !important; box-shadow: 0 0 0 1px #6c63ff !important; outline: none !important; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
+    /* mobile sidebar overlay */
+    .sidebar-overlay { background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
+    /* bottom nav */
+    .bottom-nav { background: rgba(15,15,35,0.98); border-top: 1px solid rgba(255,255,255,0.06); }
+    .bnav-item.active .bnav-icon { color: #818cf8; }
+    .bnav-item.active .bnav-label { color: #818cf8; }
+    .bnav-icon { color: #64748b; transition: color 0.2s; }
+    .bnav-label { font-size: 10px; color: #64748b; transition: color 0.2s; }
   </style>
 </head>
 <body class="flex min-h-screen">
 
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div id="sidebar-overlay" class="sidebar-overlay hidden fixed inset-0 z-40 lg:hidden" onclick="closeSidebar()"></div>
+
 <!-- SIDEBAR -->
-<aside class="sidebar w-64 flex-shrink-0 flex flex-col fixed h-full z-30">
-  <div class="p-6 border-b border-white/5">
+<aside id="sidebar" class="sidebar w-64 flex-shrink-0 flex flex-col fixed h-full z-50
+  -translate-x-full lg:translate-x-0 transition-transform duration-300">
+  <div class="p-5 border-b border-white/5 flex items-center justify-between">
     <a href="/" class="flex items-center gap-2 text-lg font-bold">
       <i class="fa-solid fa-circle-bolt text-indigo-400"></i>
       <span class="grad-text">CryptoInvest</span>
     </a>
+    <button onclick="closeSidebar()" class="lg:hidden text-slate-400 hover:text-white p-1">
+      <i class="fa-solid fa-xmark text-xl"></i>
+    </button>
   </div>
-  <nav class="flex-1 p-4 space-y-1">
+  <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
     <button onclick="setTab('overview')" id="nav-overview"
       class="nav-item active w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 text-sm">
-      <i class="fa-solid fa-chart-pie w-5"></i> Обзор
+      <i class="fa-solid fa-chart-pie w-5 text-center"></i> Обзор
     </button>
     <button onclick="setTab('invest')" id="nav-invest"
       class="nav-item w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 text-sm">
-      <i class="fa-solid fa-arrow-trend-up w-5"></i> Инвестировать
+      <i class="fa-solid fa-arrow-trend-up w-5 text-center"></i> Инвестировать
     </button>
     <button onclick="setTab('deposit')" id="nav-deposit"
       class="nav-item w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 text-sm">
-      <i class="fa-solid fa-wallet w-5"></i> Пополнить
+      <i class="fa-solid fa-wallet w-5 text-center"></i> Пополнить
     </button>
     <button onclick="setTab('withdraw')" id="nav-withdraw"
       class="nav-item w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 text-sm">
-      <i class="fa-solid fa-money-bill-transfer w-5"></i> Вывод
+      <i class="fa-solid fa-money-bill-transfer w-5 text-center"></i> Вывод
     </button>
     <button onclick="setTab('history')" id="nav-history"
       class="nav-item w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 text-sm">
-      <i class="fa-solid fa-clock-rotate-left w-5"></i> История
+      <i class="fa-solid fa-clock-rotate-left w-5 text-center"></i> История
     </button>
     <button onclick="setTab('referral')" id="nav-referral"
       class="nav-item w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 text-sm">
-      <i class="fa-solid fa-users w-5"></i> Рефералы
+      <i class="fa-solid fa-users w-5 text-center"></i> Рефералы
     </button>
   </nav>
   <div class="p-4 border-t border-white/5">
-    <div id="sidebar-user" class="flex items-center gap-3 mb-3">
-      <div class="w-9 h-9 rounded-full grad flex items-center justify-center text-sm font-bold">?</div>
+    <div class="flex items-center gap-3 mb-3">
+      <div class="w-9 h-9 rounded-full grad flex items-center justify-center text-sm font-bold flex-shrink-0" id="sb-avatar">?</div>
       <div class="flex-1 min-w-0">
         <div class="font-semibold text-sm truncate" id="sb-name">...</div>
         <div class="text-xs text-slate-400 truncate" id="sb-email">...</div>
       </div>
     </div>
-    <button onclick="logout()" class="w-full text-left px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition">
+    <button onclick="logout()"
+      class="w-full text-left px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition">
       <i class="fa-solid fa-right-from-bracket mr-2"></i>Выйти
     </button>
   </div>
 </aside>
 
 <!-- MAIN -->
-<main class="ml-64 flex-1 p-8">
+<main class="flex-1 lg:ml-64 pb-20 lg:pb-0">
 
-  <!-- OVERVIEW TAB -->
-  <div id="tab-overview" class="tab-content active">
-    <h1 class="text-2xl font-black mb-6">Добро пожаловать, <span id="user-name">...</span> 👋</h1>
+  <!-- TOP BAR (mobile) -->
+  <header class="lg:hidden sticky top-0 z-30 flex items-center justify-between px-4 h-14
+    bg-[#0a0a1a]/95 border-b border-white/5 backdrop-filter backdrop-blur-lg">
+    <button onclick="openSidebar()" class="text-slate-400 hover:text-white p-2 -ml-2">
+      <i class="fa-solid fa-bars text-lg"></i>
+    </button>
+    <a href="/" class="flex items-center gap-2 font-bold">
+      <i class="fa-solid fa-circle-bolt text-indigo-400"></i>
+      <span class="grad-text text-sm">CryptoInvest</span>
+    </a>
+    <div class="w-9 h-9 rounded-full grad flex items-center justify-center text-sm font-bold" id="top-avatar">?</div>
+  </header>
 
-    <!-- Balance cards -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      <div class="card rounded-2xl p-5">
-        <div class="text-slate-400 text-xs mb-2">Баланс</div>
-        <div class="text-2xl font-black text-white" id="stat-balance">$0</div>
-        <div class="text-xs text-green-400 mt-1"><i class="fa-solid fa-arrow-up"></i> Доступно для инвестиций</div>
+  <!-- CONTENT AREA -->
+  <div class="p-4 sm:p-6 lg:p-8">
+
+    <!-- OVERVIEW TAB -->
+    <div id="tab-overview" class="tab-content active">
+      <h1 class="text-xl sm:text-2xl font-black mb-5">
+        Добро пожаловать, <span id="user-name">...</span> 👋
+      </h1>
+
+      <!-- Balance cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div class="card rounded-xl sm:rounded-2xl p-4 sm:p-5">
+          <div class="text-slate-400 text-xs mb-1 sm:mb-2">Баланс</div>
+          <div class="text-lg sm:text-2xl font-black text-white" id="stat-balance">$0</div>
+          <div class="text-xs text-green-400 mt-1 hidden sm:block">Доступно для инвестиций</div>
+        </div>
+        <div class="card rounded-xl sm:rounded-2xl p-4 sm:p-5">
+          <div class="text-slate-400 text-xs mb-1 sm:mb-2">Инвестировано</div>
+          <div class="text-lg sm:text-2xl font-black text-white" id="stat-invested">$0</div>
+          <div class="text-xs text-slate-400 mt-1 hidden sm:block">Всего вложено</div>
+        </div>
+        <div class="card rounded-xl sm:rounded-2xl p-4 sm:p-5">
+          <div class="text-slate-400 text-xs mb-1 sm:mb-2">Прибыль</div>
+          <div class="text-lg sm:text-2xl font-black text-green-400" id="stat-profit">$0</div>
+          <div class="text-xs text-slate-400 mt-1 hidden sm:block">Всего заработано</div>
+        </div>
+        <div class="card rounded-xl sm:rounded-2xl p-4 sm:p-5">
+          <div class="text-slate-400 text-xs mb-1 sm:mb-2">Активных</div>
+          <div class="text-lg sm:text-2xl font-black text-indigo-400" id="stat-active">0</div>
+          <div class="text-xs text-slate-400 mt-1 hidden sm:block">Инвестиций</div>
+        </div>
       </div>
-      <div class="card rounded-2xl p-5">
-        <div class="text-slate-400 text-xs mb-2">Инвестировано</div>
-        <div class="text-2xl font-black text-white" id="stat-invested">$0</div>
-        <div class="text-xs text-slate-400 mt-1">Всего вложено</div>
-      </div>
-      <div class="card rounded-2xl p-5">
-        <div class="text-slate-400 text-xs mb-2">Прибыль</div>
-        <div class="text-2xl font-black text-green-400" id="stat-profit">$0</div>
-        <div class="text-xs text-slate-400 mt-1">Всего заработано</div>
-      </div>
-      <div class="card rounded-2xl p-5">
-        <div class="text-slate-400 text-xs mb-2">Активных инвестиций</div>
-        <div class="text-2xl font-black text-indigo-400" id="stat-active">0</div>
-        <div class="text-xs text-slate-400 mt-1">Сейчас работают</div>
-      </div>
-    </div>
 
-    <!-- Active investments -->
-    <h2 class="text-lg font-bold mb-4">Активные инвестиции</h2>
-    <div id="active-investments" class="space-y-3 mb-8">
-      <div class="text-slate-500 text-sm">Загрузка...</div>
-    </div>
+      <!-- Active investments -->
+      <h2 class="text-base sm:text-lg font-bold mb-3 sm:mb-4">Активные инвестиции</h2>
+      <div id="active-investments" class="space-y-3 mb-6 sm:mb-8">
+        <div class="text-slate-500 text-sm">Загрузка...</div>
+      </div>
 
-    <!-- Quick actions -->
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      <button onclick="setTab('invest')" class="card rounded-xl p-4 text-left hover:bg-white/6 transition">
-        <i class="fa-solid fa-arrow-trend-up text-green-400 text-xl mb-2"></i>
-        <div class="font-semibold text-sm">Новая инвестиция</div>
-        <div class="text-xs text-slate-400 mt-1">Выбрать план и вложить</div>
-      </button>
-      <button onclick="setTab('deposit')" class="card rounded-xl p-4 text-left hover:bg-white/6 transition">
-        <i class="fa-solid fa-wallet text-blue-400 text-xl mb-2"></i>
-        <div class="font-semibold text-sm">Пополнить баланс</div>
-        <div class="text-xs text-slate-400 mt-1">Депозит от $100</div>
-      </button>
-      <button onclick="setTab('withdraw')" class="card rounded-xl p-4 text-left hover:bg-white/6 transition">
-        <i class="fa-solid fa-money-bill-transfer text-purple-400 text-xl mb-2"></i>
-        <div class="font-semibold text-sm">Вывести средства</div>
-        <div class="text-xs text-slate-400 mt-1">На крипто-кошелёк</div>
-      </button>
-    </div>
-  </div>
-
-  <!-- INVEST TAB -->
-  <div id="tab-invest" class="tab-content">
-    <h1 class="text-2xl font-black mb-2">Инвестировать</h1>
-    <p class="text-slate-400 mb-6">Выбери план и укажи сумму</p>
-    <div id="invest-plans" class="grid md:grid-cols-2 gap-4 mb-6">
-      <div class="text-slate-500 text-sm">Загрузка планов...</div>
-    </div>
-    <div id="invest-form" class="hidden card rounded-2xl p-6 max-w-md">
-      <h3 class="font-bold mb-4">Создать инвестицию: <span id="inv-plan-name" class="text-indigo-400"></span></h3>
-      <div id="inv-error" class="hidden mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"></div>
-      <div id="inv-success" class="hidden mb-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm"></div>
-      <label class="text-sm text-slate-400 mb-2 block">Сумма ($)</label>
-      <input id="inv-amount" type="number" placeholder="100"
-        class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none mb-4" />
-      <div class="text-xs text-slate-400 mb-4" id="inv-plan-info"></div>
-      <div class="flex gap-3">
-        <button onclick="cancelInvest()" class="flex-1 py-3 rounded-xl border border-white/10 text-slate-400 hover:bg-white/5 transition">
-          Отмена
+      <!-- Quick actions -->
+      <div class="grid grid-cols-3 gap-3 sm:gap-4">
+        <button onclick="setTab('invest')"
+          class="card rounded-xl p-3 sm:p-4 text-center hover:bg-white/6 transition">
+          <i class="fa-solid fa-arrow-trend-up text-green-400 text-xl sm:text-2xl mb-1 sm:mb-2 block"></i>
+          <div class="font-semibold text-xs sm:text-sm">Инвестировать</div>
         </button>
-        <button onclick="submitInvestment()" id="inv-btn"
-          class="flex-1 py-3 rounded-xl grad font-semibold hover:opacity-90 transition">
-          Вложить
+        <button onclick="setTab('deposit')"
+          class="card rounded-xl p-3 sm:p-4 text-center hover:bg-white/6 transition">
+          <i class="fa-solid fa-wallet text-blue-400 text-xl sm:text-2xl mb-1 sm:mb-2 block"></i>
+          <div class="font-semibold text-xs sm:text-sm">Пополнить</div>
+        </button>
+        <button onclick="setTab('withdraw')"
+          class="card rounded-xl p-3 sm:p-4 text-center hover:bg-white/6 transition">
+          <i class="fa-solid fa-money-bill-transfer text-purple-400 text-xl sm:text-2xl mb-1 sm:mb-2 block"></i>
+          <div class="font-semibold text-xs sm:text-sm">Вывести</div>
         </button>
       </div>
     </div>
-  </div>
 
-  <!-- DEPOSIT TAB -->
-  <div id="tab-deposit" class="tab-content">
-    <h1 class="text-2xl font-black mb-2">Пополнить баланс</h1>
-    <p class="text-slate-400 mb-6">Отправь USDT на указанный адрес и заполни форму</p>
-    <div class="grid lg:grid-cols-2 gap-6">
-      <div class="card rounded-2xl p-6">
-        <h3 class="font-bold mb-4">Наши реквизиты</h3>
-        <div class="space-y-4">
-          <div>
-            <div class="text-xs text-slate-400 mb-2">USDT TRC20 (рекомендуем)</div>
-            <div class="bg-white/5 rounded-xl p-3 font-mono text-sm break-all select-all text-indigo-300" id="wallet-trc20">
-              TRX9j4VzDmFY7hGk...
-            </div>
-            <button onclick="copyWallet('trc20')" class="mt-2 text-xs text-indigo-400 hover:text-indigo-300">
-              <i class="fa-solid fa-copy mr-1"></i>Скопировать
-            </button>
-          </div>
-          <div>
-            <div class="text-xs text-slate-400 mb-2">USDT BEP20</div>
-            <div class="bg-white/5 rounded-xl p-3 font-mono text-sm break-all select-all text-indigo-300" id="wallet-bep20">
-              0x8f3Cf7ad23Cd3Cf...
-            </div>
-            <button onclick="copyWallet('bep20')" class="mt-2 text-xs text-indigo-400 hover:text-indigo-300">
-              <i class="fa-solid fa-copy mr-1"></i>Скопировать
-            </button>
-          </div>
-        </div>
-        <div class="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-yellow-400 text-xs">
-          <i class="fa-solid fa-triangle-exclamation mr-2"></i>
-          Минимальный депозит — $100. После отправки обязательно заполни форму.
-        </div>
+    <!-- INVEST TAB -->
+    <div id="tab-invest" class="tab-content">
+      <h1 class="text-xl sm:text-2xl font-black mb-1 sm:mb-2">Инвестировать</h1>
+      <p class="text-slate-400 text-sm sm:text-base mb-4 sm:mb-6">Выбери план и укажи сумму</p>
+      <div id="invest-plans" class="grid sm:grid-cols-2 gap-3 sm:gap-4 mb-5 sm:mb-6">
+        <div class="text-slate-500 text-sm">Загрузка планов...</div>
       </div>
-      <div class="card rounded-2xl p-6">
-        <h3 class="font-bold mb-4">Подтвердить депозит</h3>
-        <div id="dep-error" class="hidden mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"></div>
-        <div id="dep-success" class="hidden mb-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm"></div>
-        <form onsubmit="submitDeposit(event)" class="space-y-4">
-          <div>
-            <label class="text-sm text-slate-400 mb-2 block">Сумма депозита ($)</label>
-            <input id="dep-amount" type="number" min="100" placeholder="100"
-              class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none" required />
-          </div>
-          <div>
-            <label class="text-sm text-slate-400 mb-2 block">Хэш транзакции (TX Hash)</label>
-            <input id="dep-hash" type="text" placeholder="0x..."
-              class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none" />
-          </div>
-          <div>
-            <label class="text-sm text-slate-400 mb-2 block">Адрес отправителя</label>
-            <input id="dep-wallet" type="text" placeholder="Ваш кошелёк"
-              class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none" />
-          </div>
-          <button type="submit" id="dep-btn"
-            class="w-full py-4 rounded-xl grad font-bold hover:opacity-90 transition">
-            Отправить заявку
+      <div id="invest-form" class="hidden card rounded-xl sm:rounded-2xl p-4 sm:p-6 max-w-md">
+        <h3 class="font-bold mb-3 sm:mb-4 text-sm sm:text-base">
+          Создать инвестицию:
+          <span id="inv-plan-name" class="text-indigo-400"></span>
+        </h3>
+        <div id="inv-error" class="hidden mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"></div>
+        <div id="inv-success" class="hidden mb-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm"></div>
+        <label class="text-sm text-slate-400 mb-2 block">Сумма ($)</label>
+        <input id="inv-amount" type="number" inputmode="decimal" placeholder="100"
+          class="w-full border border-white/10 rounded-xl px-4 py-3 text-white mb-2" />
+        <div class="text-xs text-slate-400 mb-4" id="inv-plan-info"></div>
+        <div class="flex gap-3">
+          <button onclick="cancelInvest()"
+            class="flex-1 py-3 rounded-xl border border-white/10 text-slate-400 hover:bg-white/5 transition text-sm">
+            Отмена
           </button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- WITHDRAW TAB -->
-  <div id="tab-withdraw" class="tab-content">
-    <h1 class="text-2xl font-black mb-2">Вывод средств</h1>
-    <p class="text-slate-400 mb-6">Заявки обрабатываются в течение 12 часов</p>
-    <div class="grid lg:grid-cols-2 gap-6">
-      <div class="card rounded-2xl p-6">
-        <div id="wd-error" class="hidden mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"></div>
-        <div id="wd-success" class="hidden mb-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm"></div>
-        <div class="mb-4 p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
-          <div class="text-xs text-slate-400 mb-1">Доступно для вывода</div>
-          <div class="text-2xl font-black text-white" id="wd-balance">$0</div>
-        </div>
-        <form onsubmit="submitWithdrawal(event)" class="space-y-4">
-          <div>
-            <label class="text-sm text-slate-400 mb-2 block">Сумма ($)</label>
-            <input id="wd-amount" type="number" min="10" placeholder="10"
-              class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none" required />
-          </div>
-          <div>
-            <label class="text-sm text-slate-400 mb-2 block">USDT-адрес получателя</label>
-            <input id="wd-wallet" type="text" placeholder="Ваш кошелёк"
-              class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none" required />
-          </div>
-          <div>
-            <label class="text-sm text-slate-400 mb-2 block">Сеть</label>
-            <select id="wd-network"
-              class="w-full border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none" style="background:rgba(255,255,255,0.05)">
-              <option value="TRC20">USDT TRC20</option>
-              <option value="BEP20">USDT BEP20</option>
-              <option value="ERC20">USDT ERC20</option>
-            </select>
-          </div>
-          <button type="submit" id="wd-btn"
-            class="w-full py-4 rounded-xl grad font-bold hover:opacity-90 transition">
-            Отправить заявку
+          <button onclick="submitInvestment()" id="inv-btn"
+            class="flex-1 py-3 rounded-xl grad font-semibold hover:opacity-90 transition text-sm">
+            Вложить
           </button>
-        </form>
-      </div>
-      <div class="card rounded-2xl p-6">
-        <h3 class="font-bold mb-4">История выводов</h3>
-        <div id="wd-history" class="space-y-2">
-          <div class="text-slate-500 text-sm">Загрузка...</div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- HISTORY TAB -->
-  <div id="tab-history" class="tab-content">
-    <h1 class="text-2xl font-black mb-6">История транзакций</h1>
-    <div class="card rounded-2xl overflow-hidden">
-      <div id="tx-list" class="divide-y divide-white/5">
-        <div class="p-4 text-slate-500 text-sm">Загрузка...</div>
+    <!-- DEPOSIT TAB -->
+    <div id="tab-deposit" class="tab-content">
+      <h1 class="text-xl sm:text-2xl font-black mb-1 sm:mb-2">Пополнить баланс</h1>
+      <p class="text-slate-400 text-sm mb-4 sm:mb-6">Переведи USDT и подтверди заявку</p>
+      <div class="grid lg:grid-cols-2 gap-4 sm:gap-6">
+        <div class="card rounded-xl sm:rounded-2xl p-4 sm:p-6">
+          <h3 class="font-bold mb-4 text-sm sm:text-base">Реквизиты для оплаты</h3>
+          <div class="space-y-4">
+            <div>
+              <div class="text-xs text-slate-400 mb-1.5">USDT TRC20 <span class="text-green-400">(рекомендуем)</span></div>
+              <div class="bg-white/5 rounded-xl px-3 py-2.5 font-mono text-xs sm:text-sm break-all text-indigo-300 select-all" id="wallet-trc20">
+                TRX9j4VzDmFY7hGk2PqK8xNvR3LsWcMb
+              </div>
+              <button onclick="copyWallet('trc20')"
+                class="mt-1.5 text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
+                <i class="fa-solid fa-copy"></i>Скопировать
+              </button>
+            </div>
+            <div>
+              <div class="text-xs text-slate-400 mb-1.5">USDT BEP20</div>
+              <div class="bg-white/5 rounded-xl px-3 py-2.5 font-mono text-xs sm:text-sm break-all text-indigo-300 select-all" id="wallet-bep20">
+                0x8f3Cf7ad23Cd3CfABB92D977D5b8c92
+              </div>
+              <button onclick="copyWallet('bep20')"
+                class="mt-1.5 text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
+                <i class="fa-solid fa-copy"></i>Скопировать
+              </button>
+            </div>
+          </div>
+          <div class="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-yellow-400 text-xs leading-relaxed">
+            <i class="fa-solid fa-triangle-exclamation mr-1"></i>
+            Минимальный депозит — $100. После отправки заполни форму ниже.
+          </div>
+        </div>
+        <div class="card rounded-xl sm:rounded-2xl p-4 sm:p-6">
+          <h3 class="font-bold mb-4 text-sm sm:text-base">Подтвердить депозит</h3>
+          <div id="dep-error" class="hidden mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"></div>
+          <div id="dep-success" class="hidden mb-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm"></div>
+          <form onsubmit="submitDeposit(event)" class="space-y-3 sm:space-y-4">
+            <div>
+              <label class="text-xs sm:text-sm text-slate-400 mb-1.5 block">Сумма депозита ($)</label>
+              <input id="dep-amount" type="number" inputmode="decimal" min="100" placeholder="100"
+                class="w-full border border-white/10 rounded-xl px-4 py-3 text-white text-sm" required />
+            </div>
+            <div>
+              <label class="text-xs sm:text-sm text-slate-400 mb-1.5 block">TX Hash (хэш транзакции)</label>
+              <input id="dep-hash" type="text" placeholder="0x..."
+                class="w-full border border-white/10 rounded-xl px-4 py-3 text-white text-sm" />
+            </div>
+            <div>
+              <label class="text-xs sm:text-sm text-slate-400 mb-1.5 block">Адрес отправителя</label>
+              <input id="dep-wallet" type="text" placeholder="Ваш кошелёк"
+                class="w-full border border-white/10 rounded-xl px-4 py-3 text-white text-sm" />
+            </div>
+            <button type="submit" id="dep-btn"
+              class="w-full py-3 sm:py-4 rounded-xl grad font-bold hover:opacity-90 transition text-sm sm:text-base">
+              Отправить заявку
+            </button>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- REFERRAL TAB -->
-  <div id="tab-referral" class="tab-content">
-    <h1 class="text-2xl font-black mb-2">Реферальная программа</h1>
-    <p class="text-slate-400 mb-6">Приглашай друзей — получай 5% от их первого депозита</p>
-    <div class="card rounded-2xl p-6 max-w-lg">
-      <div class="text-xs text-slate-400 mb-2">Твой реферальный код</div>
-      <div class="flex gap-3">
-        <div class="flex-1 bg-white/5 rounded-xl px-4 py-3 font-mono text-indigo-400 font-bold text-lg" id="ref-code">...</div>
-        <button onclick="copyRef()" class="px-4 py-3 rounded-xl card hover:bg-white/8 transition text-slate-300">
-          <i class="fa-solid fa-copy"></i>
-        </button>
-      </div>
-      <div class="mt-4 text-xs text-slate-400 mb-2">Реферальная ссылка</div>
-      <div class="flex gap-3">
-        <div class="flex-1 bg-white/5 rounded-xl px-4 py-3 text-xs text-slate-300 font-mono overflow-hidden truncate" id="ref-link">...</div>
-        <button onclick="copyRefLink()" class="px-4 py-3 rounded-xl card hover:bg-white/8 transition text-slate-300">
-          <i class="fa-solid fa-copy"></i>
-        </button>
-      </div>
-      <div class="mt-6 p-4 rounded-xl bg-green-500/10 border border-green-500/20">
-        <div class="text-xs text-slate-400 mb-1">Заработано с рефералов</div>
-        <div class="text-2xl font-black text-green-400">$0</div>
+    <!-- WITHDRAW TAB -->
+    <div id="tab-withdraw" class="tab-content">
+      <h1 class="text-xl sm:text-2xl font-black mb-1 sm:mb-2">Вывод средств</h1>
+      <p class="text-slate-400 text-sm mb-4 sm:mb-6">Обработка до 12 часов</p>
+      <div class="grid lg:grid-cols-2 gap-4 sm:gap-6">
+        <div class="card rounded-xl sm:rounded-2xl p-4 sm:p-6">
+          <div id="wd-error" class="hidden mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"></div>
+          <div id="wd-success" class="hidden mb-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm"></div>
+          <div class="mb-4 p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+            <div class="text-xs text-slate-400 mb-1">Доступно для вывода</div>
+            <div class="text-2xl sm:text-3xl font-black text-white" id="wd-balance">$0</div>
+          </div>
+          <form onsubmit="submitWithdrawal(event)" class="space-y-3 sm:space-y-4">
+            <div>
+              <label class="text-xs sm:text-sm text-slate-400 mb-1.5 block">Сумма ($)</label>
+              <input id="wd-amount" type="number" inputmode="decimal" min="10" placeholder="10"
+                class="w-full border border-white/10 rounded-xl px-4 py-3 text-white text-sm" required />
+            </div>
+            <div>
+              <label class="text-xs sm:text-sm text-slate-400 mb-1.5 block">USDT-адрес</label>
+              <input id="wd-wallet" type="text" placeholder="Ваш кошелёк"
+                class="w-full border border-white/10 rounded-xl px-4 py-3 text-white text-sm" required />
+            </div>
+            <div>
+              <label class="text-xs sm:text-sm text-slate-400 mb-1.5 block">Сеть</label>
+              <select id="wd-network"
+                class="w-full border border-white/10 rounded-xl px-4 py-3 text-white text-sm">
+                <option value="TRC20">USDT TRC20</option>
+                <option value="BEP20">USDT BEP20</option>
+                <option value="ERC20">USDT ERC20</option>
+              </select>
+            </div>
+            <button type="submit" id="wd-btn"
+              class="w-full py-3 sm:py-4 rounded-xl grad font-bold hover:opacity-90 transition text-sm sm:text-base">
+              Отправить заявку
+            </button>
+          </form>
+        </div>
+        <div class="card rounded-xl sm:rounded-2xl p-4 sm:p-6">
+          <h3 class="font-bold mb-4 text-sm sm:text-base">История выводов</h3>
+          <div id="wd-history" class="space-y-2">
+            <div class="text-slate-500 text-sm">Загрузка...</div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
+    <!-- HISTORY TAB -->
+    <div id="tab-history" class="tab-content">
+      <h1 class="text-xl sm:text-2xl font-black mb-5 sm:mb-6">История транзакций</h1>
+      <div class="card rounded-xl sm:rounded-2xl overflow-hidden">
+        <div id="tx-list" class="divide-y divide-white/5">
+          <div class="p-4 text-slate-500 text-sm">Загрузка...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REFERRAL TAB -->
+    <div id="tab-referral" class="tab-content">
+      <h1 class="text-xl sm:text-2xl font-black mb-1">Реферальная программа</h1>
+      <p class="text-slate-400 text-sm mb-5 sm:mb-6">Получай 5% от первого депозита друга</p>
+      <div class="card rounded-xl sm:rounded-2xl p-4 sm:p-6 max-w-lg">
+        <div class="text-xs text-slate-400 mb-2">Твой реферальный код</div>
+        <div class="flex gap-2 sm:gap-3">
+          <div class="flex-1 bg-white/5 rounded-xl px-4 py-3 font-mono text-indigo-400 font-bold text-base sm:text-lg" id="ref-code">...</div>
+          <button onclick="copyRef()"
+            class="px-4 py-3 rounded-xl card hover:bg-white/8 transition text-slate-300">
+            <i class="fa-solid fa-copy"></i>
+          </button>
+        </div>
+        <div class="mt-4 text-xs text-slate-400 mb-2">Реферальная ссылка</div>
+        <div class="flex gap-2">
+          <div class="flex-1 bg-white/5 rounded-xl px-3 py-3 text-xs text-slate-300 font-mono overflow-hidden truncate" id="ref-link">...</div>
+          <button onclick="copyRefLink()"
+            class="px-4 py-3 rounded-xl card hover:bg-white/8 transition text-slate-300">
+            <i class="fa-solid fa-copy"></i>
+          </button>
+        </div>
+        <div class="mt-5 p-4 rounded-xl bg-green-500/10 border border-green-500/20 text-center">
+          <div class="text-xs text-slate-400 mb-1">Заработано с рефералов</div>
+          <div class="text-2xl font-black text-green-400">$0</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content area -->
 </main>
+
+<!-- BOTTOM NAV (mobile only) -->
+<nav class="bottom-nav fixed bottom-0 left-0 right-0 z-30 flex lg:hidden">
+  <button onclick="setTab('overview')" id="bnav-overview" class="bnav-item active flex-1 flex flex-col items-center justify-center py-2.5 gap-1">
+    <i class="fa-solid fa-chart-pie bnav-icon text-lg"></i>
+    <span class="bnav-label">Обзор</span>
+  </button>
+  <button onclick="setTab('invest')" id="bnav-invest" class="bnav-item flex-1 flex flex-col items-center justify-center py-2.5 gap-1">
+    <i class="fa-solid fa-arrow-trend-up bnav-icon text-lg"></i>
+    <span class="bnav-label">Вложить</span>
+  </button>
+  <button onclick="setTab('deposit')" id="bnav-deposit" class="bnav-item flex-1 flex flex-col items-center justify-center py-2.5 gap-1">
+    <i class="fa-solid fa-wallet bnav-icon text-lg"></i>
+    <span class="bnav-label">Депозит</span>
+  </button>
+  <button onclick="setTab('withdraw')" id="bnav-withdraw" class="bnav-item flex-1 flex flex-col items-center justify-center py-2.5 gap-1">
+    <i class="fa-solid fa-money-bill-transfer bnav-icon text-lg"></i>
+    <span class="bnav-label">Вывод</span>
+  </button>
+  <button onclick="setTab('history')" id="bnav-history" class="bnav-item flex-1 flex flex-col items-center justify-center py-2.5 gap-1">
+    <i class="fa-solid fa-clock-rotate-left bnav-icon text-lg"></i>
+    <span class="bnav-label">История</span>
+  </button>
+</nav>
 
 <script>
 const API = '';
@@ -310,10 +376,19 @@ let selectedPlan = null;
 
 if (!token) window.location.href = '/login';
 
+function openSidebar() {
+  document.getElementById('sidebar').classList.remove('-translate-x-full');
+  document.getElementById('sidebar-overlay').classList.remove('hidden');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.add('-translate-x-full');
+  document.getElementById('sidebar-overlay').classList.add('hidden');
+}
+
 async function apiFetch(path, opts = {}) {
   const res = await fetch(API + path, {
     ...opts,
-    headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json', ...(opts.headers || {}) },
+    headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json', ...(opts.headers||{}) },
   });
   if (res.status === 401) { logout(); return; }
   return res;
@@ -322,9 +397,11 @@ async function apiFetch(path, opts = {}) {
 function fmt(v) {
   return '$' + parseFloat(v || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
-
 function fmtDate(d) {
-  return new Date(d).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  return new Date(d).toLocaleDateString('ru-RU', {
+    day: '2-digit', month: '2-digit', year: '2-digit',
+    hour: '2-digit', minute: '2-digit',
+  });
 }
 
 async function loadUser() {
@@ -333,14 +410,16 @@ async function loadUser() {
   document.getElementById('user-name').textContent = user.full_name.split(' ')[0];
   document.getElementById('sb-name').textContent = user.full_name;
   document.getElementById('sb-email').textContent = user.email;
-  document.getElementById('sb-name').parentElement.previousElementSibling.textContent = user.full_name[0];
+  const initials = user.full_name[0] || '?';
+  document.getElementById('sb-avatar').textContent = initials;
+  document.getElementById('top-avatar').textContent = initials;
   document.getElementById('stat-balance').textContent = fmt(user.balance);
   document.getElementById('stat-invested').textContent = fmt(user.total_invested);
   document.getElementById('stat-profit').textContent = fmt(user.total_profit);
   document.getElementById('wd-balance').textContent = fmt(user.balance);
   document.getElementById('ref-code').textContent = user.referral_code || '—';
-  const link = window.location.origin + '/login#register?ref=' + user.referral_code;
-  document.getElementById('ref-link').textContent = link;
+  document.getElementById('ref-link').textContent =
+    window.location.origin + '/login#register?ref=' + user.referral_code;
 }
 
 async function loadInvestments() {
@@ -354,22 +433,23 @@ async function loadInvestments() {
     return;
   }
   el.innerHTML = active.map(i => {
-    const pct = Math.min(100, (i.profit_accrued / (i.amount * i.plan.daily_return_pct / 100 * i.plan.duration_days)) * 100 || 0);
+    const maxProfit = i.amount * i.plan.daily_return_pct / 100 * i.plan.duration_days;
+    const pct = Math.min(100, maxProfit > 0 ? (i.profit_accrued / maxProfit) * 100 : 0);
     return `
-    <div class="card rounded-xl p-4">
-      <div class="flex justify-between items-start mb-3">
+    <div class="card rounded-xl p-3 sm:p-4">
+      <div class="flex justify-between items-start mb-2 sm:mb-3">
         <div>
-          <span class="font-semibold">${i.plan.name}</span>
+          <span class="font-semibold text-sm sm:text-base">${i.plan.name}</span>
           <span class="ml-2 text-xs text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full">${i.plan.daily_return_pct}%/день</span>
         </div>
-        <span class="text-green-400 font-bold">${fmt(i.profit_accrued)}</span>
+        <span class="text-green-400 font-bold text-sm sm:text-base">${fmt(i.profit_accrued)}</span>
       </div>
       <div class="flex justify-between text-xs text-slate-400 mb-2">
         <span>Вложено: ${fmt(i.amount)}</span>
-        <span>Прибыль: ${(i.plan.daily_return_pct * i.plan.duration_days).toFixed(0)}% за 30 дней</span>
+        <span>~${(i.plan.daily_return_pct * i.plan.duration_days).toFixed(0)}% за 30 д.</span>
       </div>
       <div class="w-full bg-white/5 rounded-full h-1.5">
-        <div class="h-1.5 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 transition-all" style="width:${pct.toFixed(1)}%"></div>
+        <div class="h-1.5 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500" style="width:${pct.toFixed(1)}%"></div>
       </div>
     </div>`;
   }).join('');
@@ -378,22 +458,22 @@ async function loadInvestments() {
 async function loadPlans() {
   const res = await apiFetch('/api/plans');
   plans = await res.json();
-  const colorMap = { blue: 'indigo', green: 'green', purple: 'purple', yellow: 'yellow' };
+  const colorMap = { blue:'indigo', green:'green', purple:'purple', yellow:'yellow' };
   document.getElementById('invest-plans').innerHTML = plans.map(p => {
     const c = colorMap[p.color] || 'indigo';
     return `
-    <div class="card rounded-xl p-5 hover:bg-white/6 transition cursor-pointer" onclick="selectPlan(${p.id})">
-      <div class="flex justify-between items-start mb-3">
-        <div>
-          <div class="font-bold">${p.name}</div>
-          <div class="text-xs text-slate-400 mt-0.5">${p.description}</div>
+    <div class="card rounded-xl p-4 hover:bg-white/6 transition cursor-pointer" onclick="selectPlan(${p.id})">
+      <div class="flex justify-between items-start">
+        <div class="flex-1 min-w-0">
+          <div class="font-bold text-sm sm:text-base">${p.name}</div>
+          <div class="text-xs text-slate-400 mt-0.5 truncate">${p.description}</div>
         </div>
-        <div class="text-right">
-          <div class="text-xl font-black text-${c}-400">${p.daily_return_pct}%</div>
+        <div class="text-right ml-3">
+          <div class="text-lg sm:text-xl font-black text-${c}-400">${p.daily_return_pct}%</div>
           <div class="text-xs text-slate-400">в день</div>
         </div>
       </div>
-      <div class="text-xs text-slate-500">От $${p.min_amount.toLocaleString()}${p.max_amount ? ' до $'+p.max_amount.toLocaleString() : '+'} · ${p.duration_days} дней</div>
+      <div class="text-xs text-slate-500 mt-2">От $${p.min_amount.toLocaleString()}${p.max_amount ? '–$'+p.max_amount.toLocaleString() : '+'} · ${p.duration_days} дн.</div>
     </div>`;
   }).join('');
 }
@@ -406,9 +486,10 @@ function selectPlan(planId) {
   document.getElementById('inv-amount').value = selectedPlan.min_amount;
   document.getElementById('inv-amount').min = selectedPlan.min_amount;
   document.getElementById('inv-plan-info').textContent =
-    `${selectedPlan.daily_return_pct}%/день · ${selectedPlan.duration_days} дней · Доходность ~${(selectedPlan.daily_return_pct * selectedPlan.duration_days).toFixed(0)}% · Баланс: ${fmt(user?.balance)}`;
+    `${selectedPlan.daily_return_pct}%/день · ${selectedPlan.duration_days} дней · Баланс: ${fmt(user?.balance)}`;
   document.getElementById('inv-error').classList.add('hidden');
   document.getElementById('inv-success').classList.add('hidden');
+  document.getElementById('invest-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function cancelInvest() {
@@ -422,10 +503,8 @@ async function submitInvestment() {
   const errEl = document.getElementById('inv-error');
   const sucEl = document.getElementById('inv-success');
   const btn = document.getElementById('inv-btn');
-  errEl.classList.add('hidden');
-  sucEl.classList.add('hidden');
+  errEl.classList.add('hidden'); sucEl.classList.add('hidden');
   btn.disabled = true; btn.textContent = 'Обработка...';
-
   try {
     const res = await apiFetch('/api/invest', {
       method: 'POST',
@@ -433,7 +512,7 @@ async function submitInvestment() {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || 'Ошибка');
-    sucEl.textContent = `Инвестиция создана! Вложено ${fmt(amount)}. Ежедневная прибыль: ${fmt(amount * selectedPlan.daily_return_pct / 100)}`;
+    sucEl.textContent = `Инвестиция создана! Вложено ${fmt(amount)}`;
     sucEl.classList.remove('hidden');
     cancelInvest();
     await loadUser();
@@ -452,7 +531,6 @@ async function submitDeposit(e) {
   const btn = document.getElementById('dep-btn');
   errEl.classList.add('hidden'); sucEl.classList.add('hidden');
   btn.disabled = true; btn.textContent = 'Отправка...';
-
   try {
     const res = await apiFetch('/api/deposit', {
       method: 'POST',
@@ -464,7 +542,7 @@ async function submitDeposit(e) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || 'Ошибка');
-    sucEl.textContent = 'Заявка отправлена! Ожидайте подтверждения в течение 30 минут.';
+    sucEl.textContent = 'Заявка отправлена! Подтверждение до 30 минут.';
     sucEl.classList.remove('hidden');
     e.target.reset();
   } catch (err) {
@@ -481,7 +559,6 @@ async function submitWithdrawal(e) {
   const btn = document.getElementById('wd-btn');
   errEl.classList.add('hidden'); sucEl.classList.add('hidden');
   btn.disabled = true; btn.textContent = 'Отправка...';
-
   try {
     const res = await apiFetch('/api/withdraw', {
       method: 'POST',
@@ -493,7 +570,7 @@ async function submitWithdrawal(e) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || 'Ошибка');
-    sucEl.textContent = 'Заявка на вывод создана! Обработка до 12 часов.';
+    sucEl.textContent = 'Заявка создана! Обработка до 12 часов.';
     sucEl.classList.remove('hidden');
     await loadUser();
     await loadWithdrawals();
@@ -509,24 +586,30 @@ async function loadTransactions() {
   const res = await apiFetch('/api/users/me/transactions');
   const txs = await res.json();
   const statusColor = { completed: 'green', pending: 'yellow', rejected: 'red' };
-  const typeIcon = { deposit: 'arrow-down text-green-400', withdrawal: 'arrow-up text-red-400', profit: 'coins text-yellow-400', bonus: 'gift text-purple-400' };
+  const typeIcon = {
+    deposit: 'arrow-down text-green-400',
+    withdrawal: 'arrow-up text-red-400',
+    profit: 'coins text-yellow-400',
+    bonus: 'gift text-purple-400'
+  };
   const typeName = { deposit: 'Депозит', withdrawal: 'Вывод', profit: 'Прибыль', bonus: 'Бонус' };
   document.getElementById('tx-list').innerHTML = txs.length
     ? txs.map(t => `
-      <div class="p-4 flex items-center justify-between hover:bg-white/2 transition">
+      <div class="p-3 sm:p-4 flex items-center justify-between hover:bg-white/2 transition">
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center">
-            <i class="fa-solid fa-${typeIcon[t.type] || 'circle'}"></i>
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-${typeIcon[t.type] || 'circle'} text-sm"></i>
           </div>
           <div>
-            <div class="font-semibold text-sm">${typeName[t.type] || t.type}</div>
-            <div class="text-xs text-slate-400">${fmtDate(t.created_at)}</div>
-            ${t.description ? `<div class="text-xs text-slate-500 mt-0.5">${t.description}</div>` : ''}
+            <div class="font-semibold text-xs sm:text-sm">${typeName[t.type] || t.type}</div>
+            <div class="text-xs text-slate-500">${fmtDate(t.created_at)}</div>
           </div>
         </div>
         <div class="text-right">
-          <div class="font-bold ${t.amount > 0 ? 'text-green-400' : 'text-red-400'}">${t.amount > 0 ? '+' : ''}${fmt(Math.abs(t.amount))}</div>
-          <div class="text-xs text-${statusColor[t.status] || 'slate'}-400 mt-0.5">${t.status}</div>
+          <div class="font-bold text-sm ${t.amount > 0 ? 'text-green-400' : 'text-red-400'}">
+            ${t.amount > 0 ? '+' : ''}${fmt(Math.abs(t.amount))}
+          </div>
+          <div class="text-xs text-${statusColor[t.status] || 'slate'}-400">${t.status}</div>
         </div>
       </div>`).join('')
     : '<div class="p-4 text-slate-500 text-sm">Нет транзакций</div>';
@@ -553,10 +636,16 @@ async function loadWithdrawals() {
 function setTab(name) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.bnav-item').forEach(el => el.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  document.getElementById('nav-' + name).classList.add('active');
+  const sideNav = document.getElementById('nav-' + name);
+  const botNav = document.getElementById('bnav-' + name);
+  if (sideNav) sideNav.classList.add('active');
+  if (botNav) botNav.classList.add('active');
+  closeSidebar();
   if (name === 'history') loadTransactions();
   if (name === 'withdraw') loadWithdrawals();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function logout() {
@@ -572,10 +661,9 @@ function copyRefLink() {
   navigator.clipboard.writeText(document.getElementById('ref-link').textContent);
 }
 function copyWallet(net) {
-  navigator.clipboard.writeText(document.getElementById('wallet-'+net).textContent.trim());
+  navigator.clipboard.writeText(document.getElementById('wallet-' + net).textContent.trim());
 }
 
-// Init
 async function init() {
   await loadUser();
   await loadInvestments();
